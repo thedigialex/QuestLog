@@ -1,0 +1,111 @@
+<!-- fragment_task_list.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal">
+
+        <RadioGroup
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/btnNotComplete"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="To Do" />
+
+            <RadioButton
+                android:id="@+id/btnComplete"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Completed" />
+
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/placeHolder"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/taskListView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="0.5dp" />
+
+    <Button
+        android:id="@+id/btnShowEdit"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="Add New Task" />
+
+    <LinearLayout
+        android:id="@+id/editSection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="64dp"
+        android:visibility="gone">
+
+        <EditText
+            android:id="@+id/edtTaskDescription"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:hint="Task Description"
+            android:padding="16dp" />
+
+        <!-- Task type (could use a Spinner or Radio buttons) -->
+        <Spinner
+            android:id="@+id/spinnerTaskType"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:padding="16dp" />
+
+        <!-- Repeat field (for example, a number picker or input box) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <CheckBox
+                android:id="@+id/repeatBox"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="8"
+                android:text="Repeat" />
+
+            <Button
+                android:id="@+id/btnDeleteTask"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:text="Button"
+                android:visibility="gone" />
+        </LinearLayout>
+
+
+        <Button
+            android:id="@+id/btnSaveTask"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:padding="16dp"
+            android:text="Save Task" />
+
+    </LinearLayout>
+</LinearLayout>
