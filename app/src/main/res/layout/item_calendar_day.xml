@@ -2,23 +2,25 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:background="@drawable/calendar_day_background"
     android:gravity="center"
-    android:padding="8dp"
-    android:background="@drawable/calendar_day_background">
+    android:orientation="vertical"
+    android:padding="4dp">
 
     <TextView
         android:id="@+id/dayTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:gravity="center"
+        android:text="1"
         android:textSize="16sp"
-        android:textStyle="bold"
-        android:text="1" />
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/taskCountTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="12sp"
-        android:text="2 Tasks" />
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        android:gravity="center"
+        android:text="2 Tasks"
+        android:textSize="12sp" />
 </LinearLayout>

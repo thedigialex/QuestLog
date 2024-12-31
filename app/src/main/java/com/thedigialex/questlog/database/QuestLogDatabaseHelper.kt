@@ -5,6 +5,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
 import com.thedigialex.questlog.models.*
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -137,60 +138,33 @@ class QuestLogDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         }
     }
 
-    fun getIdsFromTable(tableName: String, obtained: Int): List<Int> {
-        val ids = mutableListOf<Int>()
-        val cursor = readableDatabase.rawQuery("SELECT id FROM $tableName WHERE obtained = $obtained", null)
-        cursor.use {
-            while (it.moveToNext()) {
-                ids.add(it.getInt(it.getColumnIndexOrThrow("id")))
-            }
-        }
-        return ids
-    }
-
-    fun getTaskById(taskId: Int): Task {
-        val query = "SELECT * FROM Tasks WHERE id = ?"
-        val cursor = readableDatabase.rawQuery(query, arrayOf(taskId.toString()))
-
-        return cursor.use {
-            if (it.moveToFirst()) {
-                val id = it.getInt(it.getColumnIndexOrThrow("id"))
-                val currentLogId = it.getInt(it.getColumnIndexOrThrow("currentLogId"))
-                val type = it.getString(it.getColumnIndexOrThrow("type"))
-                val description = it.getString(it.getColumnIndexOrThrow("description"))
-                val repeat = it.getInt(it.getColumnIndexOrThrow("repeat"))
-
-                Task(
-                    id = id,
-                    currentLogId = currentLogId,
-                    type = type,
-                    description = description,
-                    repeat = repeat
-                )
-            } else {
-                throw IllegalStateException("Task with id $taskId not found")
-            }
-        }
-    }
-
-    fun getTasks(isCompleted: Int): List<Task> {
+    fun getTasks(isCompleted: Int, getRepeat: Int = 0): List<Task> {
         val tasks = mutableListOf<Task>()
+
         val queryTasks = "SELECT * FROM Tasks"
         val cursorTasks = readableDatabase.rawQuery(queryTasks, null)
-        cursorTasks.use { it ->
-            while (it.moveToNext()) {
-                val taskId = it.getInt(it.getColumnIndexOrThrow("id"))
-                val currentLogId = it.getInt(it.getColumnIndexOrThrow("currentLogId"))
-                val type = it.getString(it.getColumnIndexOrThrow("type"))
-                val description = it.getString(it.getColumnIndexOrThrow("description"))
-                val repeat = it.getInt(it.getColumnIndexOrThrow("repeat"))
-                val queryLogs = "SELECT * FROM TaskLogs WHERE taskId = $taskId AND id = $currentLogId"
-                val cursorLogs = readableDatabase.rawQuery(queryLogs, null)
 
-                cursorLogs.use {
-                    if (it.moveToNext()) {
-                        val logIsCompleted = it.getInt(it.getColumnIndexOrThrow("isCompleted"))
-                        if (logIsCompleted == isCompleted) {
+        cursorTasks.use { cursor ->
+            while (cursor.moveToNext()) {
+                val taskId = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
+                val currentLogId = cursor.getInt(cursor.getColumnIndexOrThrow("currentLogId"))
+                val type = cursor.getString(cursor.getColumnIndexOrThrow("type"))
+                val description = cursor.getString(cursor.getColumnIndexOrThrow("description"))
+                val repeat = cursor.getInt(cursor.getColumnIndexOrThrow("repeat"))
+
+                val queryLogs = """
+                SELECT * FROM TaskLogs 
+                WHERE taskId = ? AND id = ?
+            """
+                val cursorLogs = readableDatabase.rawQuery(queryLogs, arrayOf(taskId.toString(), currentLogId.toString()))
+
+                cursorLogs.use { logCursor ->
+                    if (logCursor.moveToNext()) {
+                        val logIsCompleted = logCursor.getInt(logCursor.getColumnIndexOrThrow("isCompleted"))
+
+                        if ((getRepeat == 1 && repeat == getRepeat) ||
+                            (getRepeat != 1 && logIsCompleted == isCompleted)) {
+
                             val task = Task(
                                 id = taskId,
                                 currentLogId = currentLogId,
@@ -205,6 +179,7 @@ class QuestLogDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
                 }
             }
         }
+
         tasks.sortBy {
             when (it.type) {
                 "Daily" -> 1
@@ -224,12 +199,13 @@ class QuestLogDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
             put("repeat", task.repeat)
         }
 
-        task.id = if (create) {
-            writableDatabase.insert("Tasks", null, values).takeIf { it != -1L }?.toInt() ?: task.id
+        if (create) {
+            val newId = writableDatabase.insert("Tasks", null, values).takeIf { it != -1L }?.toInt() ?: task.id
+            task.id = newId
+            ensureTaskLogValidity(task)
         } else {
             writableDatabase.update("Tasks", values, "id = ?", arrayOf(task.id.toString()))
         }
-        ensureTaskLogValidity(task)
     }
 
     fun deleteTaskAndLogs(task: Task) {
@@ -239,87 +215,29 @@ class QuestLogDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         writableDatabase.execSQL(deleteTaskQuery, arrayOf(task.id.toString()))
     }
 
-    private fun ensureTaskLogValidity(task: Task) {
-        if (task.currentLogId == 0 || !isCurrentLogValid(task)) {
-            task.currentLogId = logTask(task.id, true, 0)
-            saveTask(task, false)
-        }
-    }
-
-    private fun isCurrentLogValid(task: Task): Boolean {
-        val query = "SELECT loggedDate FROM TaskLogs WHERE taskId = ? ORDER BY loggedDate DESC LIMIT 1"
-        val cursor = writableDatabase.rawQuery(query, arrayOf(task.id.toString()))
-
-        if (cursor.moveToFirst()) {
-            val columnIndex = cursor.getColumnIndex("loggedDate")
-
-            if (columnIndex >= 0) {
-                val loggedDateStr = cursor.getString(columnIndex)
-                cursor.close()
-
-                val loggedDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(loggedDateStr)
-                    ?: return false
-                val today = Calendar.getInstance()
-
-                return when (task.type) {
-                    "Daily" -> isToday(loggedDate, today)
-                    "Weekly" -> isWithinWeek(loggedDate, today)
-                    "Monthly" -> isSameMonth(loggedDate, today)
-                    else -> false
-                }
-            } else {
-                cursor.close()
-                return false
+    fun logTask(task: Task, create: Boolean) {
+        if (create) {
+            val values = ContentValues().apply {
+                put("taskId", task.id)
+                put("loggedDate", SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date()))
+                put("isCompleted", 0)
             }
+            task.currentLogId = writableDatabase.insert("TaskLogs", null, values).takeIf { it != -1L }?.toInt() ?: 0
+            saveTask(task, false)
         } else {
-            cursor.close()
-            return false
-        }
-    }
-
-    private fun isToday(loggedDate: Date, today: Calendar): Boolean {
-        val loggedCalendar = Calendar.getInstance().apply { time = loggedDate }
-        return today.get(Calendar.YEAR) == loggedCalendar.get(Calendar.YEAR) &&
-                today.get(Calendar.DAY_OF_YEAR) == loggedCalendar.get(Calendar.DAY_OF_YEAR)
-    }
-
-    private fun isWithinWeek(loggedDate: Date, today: Calendar): Boolean {
-        val loggedCalendar = Calendar.getInstance().apply { time = loggedDate }
-        val weekAfterLogged = Calendar.getInstance().apply {
-            time = loggedDate
-            add(Calendar.DAY_OF_YEAR, 7)
-        }
-        return today.time.after(loggedCalendar.time) && today.time.before(weekAfterLogged.time)
-    }
-
-    private fun isSameMonth(loggedDate: Date, today: Calendar): Boolean {
-        val loggedCalendar = Calendar.getInstance().apply { time = loggedDate }
-        return today.get(Calendar.YEAR) == loggedCalendar.get(Calendar.YEAR) &&
-                today.get(Calendar.MONTH) == loggedCalendar.get(Calendar.MONTH)
-    }
-
-    fun logTask(taskId: Int, create: Boolean, isCompleted: Int): Int {
-        val values = ContentValues().apply {
-            put("taskId", taskId)
-            put("loggedDate", SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date()))
-            put("isCompleted", isCompleted)
-        }
-
-        return if (create) {
-            writableDatabase.insert("TaskLogs", null, values).takeIf { it != -1L }?.toInt()
-                ?: throw IllegalStateException("Failed to create a new log for task $taskId")
-        } else {
-            val rowsUpdated = writableDatabase.update(
+            val taskLog = getTaskLogById(task.currentLogId)
+            val values = ContentValues().apply {
+                put("id", taskLog.id)
+                put("loggedDate", taskLog.loggedDate)
+                put("isCompleted", 1)
+            }
+            writableDatabase.update(
                 "TaskLogs",
                 values,
-                "taskId = ? AND strftime('%Y-%m-%d', loggedDate) = ?",
-                arrayOf(taskId.toString(), SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date()))
+                "id = ? AND strftime('%Y-%m-%d', loggedDate) = ?",
+                arrayOf(taskLog.id.toString(), SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date()))
             )
-            if (rowsUpdated == 0) {
-                throw IllegalStateException("Failed to update the log for task $taskId")
-            }
 
-            val task = getTaskById(taskId)
             val user = getUser()
 
             var expReward = 0
@@ -339,35 +257,37 @@ class QuestLogDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
                     coinsReward = 100
                 }
             }
-
-            val updatedExp = user.exp + expReward
+            //To Do fix for monthly exp gained
+            //Need to add a loop
+            var updatedExp = user.exp + expReward
             val updatedCoins = user.coins + coinsReward
+            var level = user.level
+            if (updatedExp >= user.level * 25) {
+                level = user.level + 1
+                updatedExp -= user.level * 25
 
+                if (updatedExp < 0) {
+                    updatedExp = 0
+                }
+            }
             val userValues = ContentValues().apply {
+                put("level", level)
                 put("exp", updatedExp)
                 put("coins", updatedCoins)
             }
-
             writableDatabase.update(
                 "Users",
                 userValues,
                 "id = ?",
                 arrayOf(user.id.toString())
             )
+        }
+    }
 
-            if (updatedExp >= user.level * 25) {
-                val updatedLevel = user.level + 1
-                val levelValues = ContentValues().apply {
-                    put("level", updatedLevel)
-                }
-                writableDatabase.update(
-                    "Users",
-                    levelValues,
-                    "id = ?",
-                    arrayOf(user.id.toString())
-                )
-            }
-            taskId
+    fun checkLogDateForRepeating() {
+        val tasks = getTasks(0, 1)
+        for (task in tasks) {
+            ensureTaskLogValidity(task)
         }
     }
 
@@ -405,5 +325,86 @@ class QuestLogDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
             }
         }
         return logs
+    }
+
+    private fun getIdsFromTable(tableName: String, obtained: Int): List<Int> {
+        val ids = mutableListOf<Int>()
+        val cursor = readableDatabase.rawQuery("SELECT id FROM $tableName WHERE obtained = $obtained", null)
+        cursor.use {
+            while (it.moveToNext()) {
+                ids.add(it.getInt(it.getColumnIndexOrThrow("id")))
+            }
+        }
+        return ids
+    }
+
+    private fun ensureTaskLogValidity(task: Task) {
+        if (task.currentLogId == 0 || !isCurrentLogValid(task)) {
+            logTask(task, true)
+        }
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    private fun isCurrentLogValid(task: Task): Boolean {
+        val query = "SELECT loggedDate FROM TaskLogs WHERE taskId = ? ORDER BY loggedDate DESC LIMIT 1"
+        val cursor = writableDatabase.rawQuery(query, arrayOf(task.id.toString()))
+
+        if (cursor.moveToFirst()) {
+            val columnIndex = cursor.getColumnIndex("loggedDate")
+
+            if (columnIndex >= 0) {
+                val loggedDateStr = cursor.getString(columnIndex)
+                cursor.close()
+
+                val loggedDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(loggedDateStr)
+                    ?: return false
+                val today = Calendar.getInstance().time
+                return when (task.type) {
+                    "Daily" -> isTodayOrMonth(loggedDate, today, SimpleDateFormat("yyyyMMdd"))
+                    "Weekly" -> isWithinWeek(loggedDate, today)
+                    "Monthly" -> isTodayOrMonth(loggedDate, today, SimpleDateFormat("yyyyMM"))
+                    else -> false
+                }
+            } else {
+                cursor.close()
+                return false
+            }
+        } else {
+            cursor.close()
+            return false
+        }
+    }
+
+    private fun isTodayOrMonth(loggedDate: Date, today: Date, formatter: SimpleDateFormat): Boolean {
+        return formatter.format(loggedDate) == formatter.format(today)
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    private fun isWithinWeek(loggedDate: Date, today: Date): Boolean {
+        val calendar = Calendar.getInstance()
+        calendar.time = loggedDate
+        calendar.add(Calendar.DAY_OF_YEAR, 7)
+        val sevenDaysLater = calendar.time
+        return today.after(loggedDate) && today.before(sevenDaysLater) || isTodayOrMonth(loggedDate, today,SimpleDateFormat("yyyyMMdd"))
+    }
+
+    private fun getTaskLogById(taskLogId: Int): TaskLog {
+        val query = "SELECT * FROM TaskLogs WHERE id = ?"
+        val cursor = readableDatabase.rawQuery(query, arrayOf(taskLogId.toString()))
+
+        cursor.moveToFirst()
+        val id = cursor.getColumnIndex("id")
+        val taskIdIndex = cursor.getColumnIndex("taskId")
+        val loggedDateIndex = cursor.getColumnIndex("loggedDate")
+        val isCompletedIndex = cursor.getColumnIndex("isCompleted")
+
+        val taskLog = TaskLog(
+            id = cursor.getInt(id),
+            taskId = cursor.getInt(taskIdIndex),
+            loggedDate = cursor.getString(loggedDateIndex),
+            isCompleted = cursor.getInt(isCompletedIndex)
+        )
+        cursor.close()
+        return taskLog
     }
 }

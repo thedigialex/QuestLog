@@ -14,7 +14,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val playerSettingsMenu = findViewById<View>(R.id.userLayout)
-        userController =  UserController(this, playerSettingsMenu.findViewById(R.id.userLayout))
+        userController =  UserController(this, playerSettingsMenu.findViewById(R.id.userLayout), null)
         if (!userController.currentUser.isNew) {
             userController.navigateToDashboard()
         }

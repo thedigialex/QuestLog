@@ -1,6 +1,7 @@
 package com.thedigialex.questlog.fragments
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -91,7 +92,7 @@ class TaskListFragment(private val userController: UserController) : Fragment() 
     }
 
     private fun logTask(task: Task) {
-        userController.dbHelper.logTask(task.id, false, 1)
+        userController.dbHelper.logTask(task, false)
         loadTasks()
     }
 

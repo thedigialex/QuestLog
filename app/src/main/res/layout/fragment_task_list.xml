@@ -7,7 +7,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="64dp"
         android:orientation="horizontal">
 
         <RadioGroup
@@ -65,7 +65,7 @@
         <EditText
             android:id="@+id/edtTaskDescription"
             android:layout_width="match_parent"
-            android:layout_height="64dp"
+            android:layout_height="88dp"
             android:hint="Task Description"
             android:padding="16dp" />
 

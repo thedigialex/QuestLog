@@ -17,8 +17,8 @@ class DashboardActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard)
-        userController =  UserController(this, findViewById<View?>(R.id.userLayout).findViewById(R.id.userLayout))
-
+        userController = UserController(this, findViewById<View?>(R.id.userLayout).findViewById(R.id.userLayout), findViewById(R.id.tvUsername))
+        userController.dbHelper.checkLogDateForRepeating()
         val viewPager: ViewPager2 = findViewById(R.id.viewPager)
         val tabLayout: TabLayout = findViewById(R.id.tabLayout)
         val adapter = DashboardPagerAdapter(this, userController)
