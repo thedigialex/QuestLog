@@ -333,6 +333,10 @@ class QuestLogDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         }
     }
 
+    fun deleteNote(note: Note) {
+        writableDatabase.delete("Notes", "id = ?", arrayOf(note.id.toString()))
+    }
+
     @SuppressLint("DefaultLocale")
     fun getTaskLogsForMonth(month: Int, year: Int): List<TaskLog> {
         val logs = mutableListOf<TaskLog>()

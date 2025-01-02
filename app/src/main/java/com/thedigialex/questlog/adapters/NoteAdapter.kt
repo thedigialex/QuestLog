@@ -26,7 +26,7 @@ class NoteAdapter(
 
         val tvTaskDescription = view.findViewById<TextView>(R.id.tvTaskDescription)
 
-        tvTaskDescription.text = note.description
+        tvTaskDescription.text = note.title
 
         view.setOnClickListener {
             onNoteClick(note)

@@ -56,9 +56,9 @@ class  NoteListFragment(private val userController: UserController) : Fragment()
         if(!note.isNew) {
             deleteNoteButton.visibility = View.VISIBLE
             deleteNoteButton.setOnClickListener {
-                //switchVisibilityOfEdit(task)
-                //userController.dbHelper.deleteTaskAndLogs(task)
-                //loadTasks()
+                switchVisibilityOfEdit(note)
+                userController.dbHelper.deleteNote(note)
+                loadNotes()
             }
         }
     }
