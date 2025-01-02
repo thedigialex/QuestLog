@@ -5,4 +5,5 @@ data class TaskLog(
     var taskId: Int,
     var loggedDate: String,
     var isCompleted: Int,
+    var taskName: String = ""
 )

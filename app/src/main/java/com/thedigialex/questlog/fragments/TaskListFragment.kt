@@ -1,7 +1,6 @@
 package com.thedigialex.questlog.fragments
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -99,6 +98,7 @@ class TaskListFragment(private val userController: UserController) : Fragment() 
     private fun switchVisibilityOfEdit(task: Task) {
         val isInputSectionVisible = taskInputSection.visibility == View.VISIBLE
         taskInputSection.visibility = if (isInputSectionVisible) View.GONE else View.VISIBLE
+        taskListView.visibility = if (isInputSectionVisible) View.VISIBLE else View.GONE
         newTaskButton.text = if (isInputSectionVisible) "Add New" else "Close"
         deleteTaskButton.visibility = View.GONE
 

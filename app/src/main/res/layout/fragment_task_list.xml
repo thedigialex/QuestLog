@@ -1,5 +1,5 @@
-<!-- fragment_task_list.xml -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -23,20 +23,21 @@
                 android:layout_weight="1"
                 android:text="To Do" />
 
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                style="@style/HeaderText"
+                android:text="Tasks" />
+
             <RadioButton
                 android:id="@+id/btnComplete"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="Completed" />
+                android:text="Done" />
 
         </RadioGroup>
-
-        <TextView
-            android:id="@+id/placeHolder"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
 
     </LinearLayout>
 
@@ -46,7 +47,8 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:divider="@android:color/darker_gray"
-        android:dividerHeight="0.5dp" />
+        android:dividerHeight="0.5dp"
+        tools:visibility="visible" />
 
     <Button
         android:id="@+id/btnShowEdit"
@@ -57,15 +59,15 @@
     <LinearLayout
         android:id="@+id/editSection"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:orientation="vertical"
-        android:paddingBottom="64dp"
         android:visibility="gone">
 
         <EditText
             android:id="@+id/edtTaskDescription"
             android:layout_width="match_parent"
-            android:layout_height="88dp"
+            android:layout_height="96dp"
             android:hint="Task Description"
             android:padding="16dp" />
 
@@ -80,24 +82,28 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="64dp"
-            android:orientation="horizontal"
-            android:padding="16dp">
+            android:orientation="horizontal">
 
             <CheckBox
                 android:id="@+id/repeatBox"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="8"
+                android:layout_weight="1"
                 android:text="Repeat" />
 
             <Button
                 android:id="@+id/btnDeleteTask"
-                android:layout_width="0dp"
+                android:layout_width="56dp"
                 android:layout_height="match_parent"
-                android:layout_weight="2"
                 android:text="Button"
                 android:visibility="gone" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
 
         <Button

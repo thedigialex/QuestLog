@@ -5,7 +5,6 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.util.Log
 import com.thedigialex.questlog.models.*
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -91,6 +90,16 @@ class QuestLogDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
                 FOREIGN KEY(taskId) REFERENCES Tasks(id)
             );
             """
+        )
+        db.execSQL(
+            """
+        CREATE TABLE Notes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT,
+            description TEXT,
+            sortOrder INTEGER NOT NULL DEFAULT 0
+        );
+        """
         )
     }
 
@@ -291,6 +300,39 @@ class QuestLogDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         }
     }
 
+    fun getNotes(): List<Note> {
+        val notes = mutableListOf<Note>()
+        val cursor = readableDatabase.rawQuery("SELECT * FROM Notes ORDER BY `sortOrder` ASC", null)
+        cursor.use {
+            while (it.moveToNext()) {
+                notes.add(
+                    Note(
+                        id = it.getInt(it.getColumnIndexOrThrow("id")),
+                        title = it.getString(it.getColumnIndexOrThrow("title")),
+                        description = it.getString(it.getColumnIndexOrThrow("description")),
+                        sortOrder = it.getInt(it.getColumnIndexOrThrow("sortOrder"))
+                    )
+                )
+            }
+        }
+        return notes
+    }
+
+    fun saveNote(note: Note, create: Boolean) {
+        val values = ContentValues().apply {
+            put("title", note.title)
+            put("description", note.description)
+            put("sortOrder", note.sortOrder)
+        }
+
+        if (create) {
+            val newId = writableDatabase.insert("Notes", null, values).takeIf { it != -1L }?.toInt() ?: note.id
+            note.id = newId
+        } else {
+            writableDatabase.update("Notes", values, "id = ?", arrayOf(note.id.toString()))
+        }
+    }
+
     @SuppressLint("DefaultLocale")
     fun getTaskLogsForMonth(month: Int, year: Int): List<TaskLog> {
         val logs = mutableListOf<TaskLog>()
@@ -304,10 +346,12 @@ class QuestLogDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         )
 
         val query = """
-        SELECT * FROM TaskLogs 
+        SELECT TaskLogs.id, TaskLogs.taskId, TaskLogs.loggedDate, TaskLogs.isCompleted, 
+               Tasks.description AS taskDescription
+        FROM TaskLogs
+        LEFT JOIN Tasks ON TaskLogs.taskId = Tasks.id
         WHERE loggedDate BETWEEN ? AND ?
     """
-
         val cursor = readableDatabase.rawQuery(query, arrayOf(startOfMonth, endOfMonth))
         cursor.use {
             while (it.moveToNext()) {
@@ -315,12 +359,14 @@ class QuestLogDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
                 val taskId = it.getInt(it.getColumnIndexOrThrow("taskId"))
                 val loggedDate = it.getString(it.getColumnIndexOrThrow("loggedDate"))
                 val isCompleted = it.getInt(it.getColumnIndexOrThrow("isCompleted"))
+                val taskDescription = it.getString(it.getColumnIndexOrThrow("taskDescription")) ?: "No Description"
 
                 logs.add(TaskLog(
                     id = id,
                     taskId = taskId,
                     loggedDate = loggedDate,
-                    isCompleted = isCompleted
+                    isCompleted = isCompleted,
+                    taskName = taskDescription
                 ))
             }
         }

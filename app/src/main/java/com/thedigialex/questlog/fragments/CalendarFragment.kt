@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
@@ -18,6 +19,7 @@ import java.util.*
 class CalendarFragment(private val userController: UserController) : Fragment() {
 
     private lateinit var calendar: Calendar
+    private lateinit var dayDetailLayout: LinearLayout
     private lateinit var calendarRecyclerView: RecyclerView
     private lateinit var monthTextView: TextView
 
@@ -28,20 +30,13 @@ class CalendarFragment(private val userController: UserController) : Fragment() 
         val view = inflater.inflate(R.layout.fragment_calendar, container, false)
         calendarRecyclerView = view.findViewById(R.id.calendarRecyclerView)
         monthTextView = view.findViewById(R.id.tvMonth)
-        val btnDecreaseMonth: Button = view.findViewById(R.id.btnDecreaseMonth)
-        val btnIncreaseMonth: Button = view.findViewById(R.id.btnIncreaseMonth)
-
+        dayDetailLayout = view.findViewById(R.id.dayDetailLayout)
         calendar = Calendar.getInstance()
         updateCalendar()
 
-        btnDecreaseMonth.setOnClickListener {
-            changeMonth(-1)
-        }
-
-        btnIncreaseMonth.setOnClickListener {
-            changeMonth(1)
-        }
-
+        view.findViewById<Button>(R.id.btnDecreaseMonth).setOnClickListener { changeMonth(-1) }
+        view.findViewById<Button>(R.id.btnIncreaseMonth).setOnClickListener { changeMonth(1) }
+        view.findViewById<Button>(R.id.btnCloseDayDetail).setOnClickListener { dayDetailLayout.visibility = View.GONE }
         return view
     }
 
@@ -56,8 +51,6 @@ class CalendarFragment(private val userController: UserController) : Fragment() 
 
         val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
         val firstDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK) - 1
-        val totalCells = daysInMonth + firstDayOfWeek
-
         val days = mutableListOf<CalendarAdapter.DayItem>()
 
         repeat(firstDayOfWeek) {
@@ -70,7 +63,27 @@ class CalendarFragment(private val userController: UserController) : Fragment() 
         }
 
         calendarRecyclerView.layoutManager = GridLayoutManager(requireContext(), 7)
-        calendarRecyclerView.adapter = CalendarAdapter(days)
+        calendarRecyclerView.adapter = CalendarAdapter(days) { dayItem ->
+            openDayDetails(dayItem)
+        }
+    }
+
+    private fun openDayDetails(dayItem: CalendarAdapter.DayItem) {
+        dayDetailLayout.visibility = View.VISIBLE
+        val tvDayTitle = dayDetailLayout.findViewById<TextView>(R.id.tvDayTitle)
+        val tvDayContent = dayDetailLayout.findViewById<TextView>(R.id.tvDayContent)
+        if (dayItem.day != null) {
+            tvDayTitle.text = "Day ${dayItem.day}"
+
+            val taskDescriptions = if (dayItem.taskLogs.isNotEmpty()) {
+                dayItem.taskLogs.joinToString(separator = "\n\n") { taskLog ->
+                    "${if (taskLog.isCompleted == 1) "X" else "_"}: ${taskLog.taskName}"
+                }
+            } else {
+                "No tasks for this day."
+            }
+            tvDayContent.text = taskDescriptions
+        }
     }
 
     private fun changeMonth(offset: Int) {

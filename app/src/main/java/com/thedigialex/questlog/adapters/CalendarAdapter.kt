@@ -9,10 +9,10 @@ import com.thedigialex.questlog.R
 import com.thedigialex.questlog.models.TaskLog
 
 
-class CalendarAdapter(private val days: List<DayItem>) :
+class CalendarAdapter(private val days: List<DayItem>, private val onDayClick: (DayItem) -> Unit) :
     RecyclerView.Adapter<CalendarAdapter.DayViewHolder>() {
 
-    data class DayItem(val day: Int?, val tasks: List<TaskLog>)
+    data class DayItem(val day: Int?, val taskLogs: List<TaskLog>)
 
     class DayViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val dayTextView: TextView = itemView.findViewById(R.id.dayTextView)
@@ -30,8 +30,11 @@ class CalendarAdapter(private val days: List<DayItem>) :
 
         if (dayItem.day != null) {
             holder.dayTextView.text = dayItem.day.toString()
-            holder.taskCountTextView.text = "${dayItem.tasks.size} Tasks"
+            holder.taskCountTextView.text = "${dayItem.taskLogs.size} Tasks"
             holder.itemView.visibility = View.VISIBLE
+            holder.itemView.setOnClickListener {
+                onDayClick(dayItem)
+            }
         } else {
             holder.itemView.visibility = View.INVISIBLE
         }
