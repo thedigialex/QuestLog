@@ -42,43 +42,16 @@ class QuestLogDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         )
         db.execSQL(
             """
-            CREATE TABLE Titles (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                title TEXT NOT NULL,
-                obtained INTEGER NOT NULL DEFAULT 1
-            );
-            """
-        )
-        db.execSQL(
-            """
-            CREATE TABLE Classes (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                class TEXT NOT NULL,
-                obtained INTEGER NOT NULL DEFAULT 0
-            );
-            """
-        )
-        db.execSQL(
-            """
-        CREATE TABLE Avatars (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            resource TEXT NOT NULL,
-            cost INTEGER NOT NULL,
-            obtained INTEGER NOT NULL DEFAULT 0
-        );
-        """
-        )
-        db.execSQL(
-            """
-        CREATE TABLE Backgrounds (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            resource TEXT NOT NULL,
-            cost INTEGER NOT NULL,
-            obtained INTEGER NOT NULL DEFAULT 0
-        );
-        """
+                CREATE TABLE Items (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    type TEXT NOT NULL,
+                    resource TEXT NOT NULL,
+                    imageValue INTEGER,
+                    cost INTEGER NOT NULL,
+                    levelRequired INTEGER NOT NULL,
+                    obtained INTEGER NOT NULL DEFAULT 0
+                );
+                """
         )
         db.execSQL(
             """
@@ -106,10 +79,7 @@ class QuestLogDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         db.execSQL("DROP TABLE IF EXISTS Users")
         db.execSQL("DROP TABLE IF EXISTS Tasks")
-        db.execSQL("DROP TABLE IF EXISTS Titles")
-        db.execSQL("DROP TABLE IF EXISTS Classes")
-        db.execSQL("DROP TABLE IF EXISTS Backgrounds")
-        db.execSQL("DROP TABLE IF EXISTS Avatars")
+        db.execSQL("DROP TABLE IF EXISTS Items")
         db.execSQL("DROP TABLE IF EXISTS TaskLogs")
         onCreate(db)
     }
@@ -117,6 +87,27 @@ class QuestLogDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
     companion object {
         private const val DATABASE_NAME = "QuestLog.db"
         private const val DATABASE_VERSION = 1
+    }
+
+    fun saveUser(currentUser: User): Boolean {
+        val values = ContentValues().apply {
+            put("username", currentUser.username)
+            put("level", currentUser.level)
+            put("exp", currentUser.exp)
+            put("coins", currentUser.coins)
+            put("equippedAvatarId", currentUser.equippedAvatarId)
+            put("equippedBackgroundId", currentUser.equippedBackgroundId)
+            put("equippedTitleId", currentUser.equippedTitleId)
+            put("equippedClassId", currentUser.equippedClassId)
+        }
+
+        if (currentUser.id == 0) {
+            writableDatabase.insert("Users", null, values)
+            return true
+        } else {
+            writableDatabase.update("Users", values, "id = ?", arrayOf(currentUser.id.toString()))
+            return false
+        }
     }
 
     fun getUser(): User {
@@ -133,10 +124,6 @@ class QuestLogDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
                     equippedBackgroundId = it.getInt(it.getColumnIndexOrThrow("equippedBackgroundId")),
                     equippedTitleId = it.getInt(it.getColumnIndexOrThrow("equippedTitleId")),
                     equippedClassId = it.getInt(it.getColumnIndexOrThrow("equippedClassId")),
-                    avatarIds = getIdsFromTable("Avatars", 1),
-                    backgroundIds = getIdsFromTable("Backgrounds", 1),
-                    titleIds = getIdsFromTable("Titles", 1),
-                    classIds = getIdsFromTable("Classes", 1)
                 )
             } else {
                 User(
@@ -268,28 +255,18 @@ class QuestLogDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
             }
             //To Do fix for monthly exp gained
             //Need to add a loop
-            var updatedExp = user.exp + expReward
-            val updatedCoins = user.coins + coinsReward
-            var level = user.level
-            if (updatedExp >= user.level * 25) {
-                level = user.level + 1
-                updatedExp -= user.level * 25
 
-                if (updatedExp < 0) {
-                    updatedExp = 0
+            user.coins += coinsReward
+            user.exp += expReward
+            if (user.exp >= user.level * 25) {
+                user.level +=  1
+                user.exp -= user.level * 25
+
+                if (user.exp < 0) {
+                    user.exp = 0
                 }
             }
-            val userValues = ContentValues().apply {
-                put("level", level)
-                put("exp", updatedExp)
-                put("coins", updatedCoins)
-            }
-            writableDatabase.update(
-                "Users",
-                userValues,
-                "id = ?",
-                arrayOf(user.id.toString())
-            )
+            saveUser(user)
         }
     }
 
@@ -335,6 +312,51 @@ class QuestLogDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
 
     fun deleteNote(note: Note) {
         writableDatabase.delete("Notes", "id = ?", arrayOf(note.id.toString()))
+    }
+
+    fun getItems(obtained: Int): List<Item> {
+        val items = mutableListOf<Item>()
+        val cursor = readableDatabase.rawQuery(
+            "SELECT * FROM Items WHERE obtained = ?",
+            arrayOf(obtained.toString())
+        )
+        cursor.use {
+            while (it.moveToNext()) {
+                items.add(
+                    Item(
+                        id = it.getInt(it.getColumnIndexOrThrow("id")),
+                        type = it.getString(it.getColumnIndexOrThrow("type")),
+                        resource = it.getString(it.getColumnIndexOrThrow("resource")),
+                        imageValue = it.getInt(it.getColumnIndexOrThrow("imageValue")),
+                        cost = it.getInt(it.getColumnIndexOrThrow("cost")),
+                        levelRequired = it.getInt(it.getColumnIndexOrThrow("levelRequired")),
+                        obtained = it.getInt(it.getColumnIndexOrThrow("obtained"))
+                    )
+                )
+            }
+        }
+        return items
+    }
+
+    fun saveItem(item: Item, create: Boolean) {
+        val values = ContentValues().apply {
+            put("type", item.type)
+            put("resource", item.resource)
+            put("imageValue", item.imageValue)
+            put("cost", item.cost)
+            put("levelRequired", item.levelRequired)
+            put("obtained", if (create) 0 else 1)
+        }
+
+        if (create) {
+            val newId = writableDatabase.insert("Items", null, values).takeIf { it != -1L }?.toInt() ?: item.id
+            item.id = newId
+        } else {
+            val user = getUser()
+            user.coins -= item.cost
+            saveUser(user)
+            writableDatabase.update("Items", values, "id = ?", arrayOf(item.id.toString()))
+        }
     }
 
     @SuppressLint("DefaultLocale")

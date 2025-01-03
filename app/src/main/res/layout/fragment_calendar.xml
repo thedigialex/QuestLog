@@ -20,7 +20,6 @@
             android:id="@+id/tvMonth"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_gravity="center_horizontal"
             android:layout_weight="2"
             style="@style/HeaderText" />
 
@@ -37,7 +36,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:clipToPadding="false">
+        android:clipToPadding="false"
+        android:paddingTop="16dp">
 
     </androidx.recyclerview.widget.RecyclerView>
 
@@ -59,7 +59,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:gravity="center"
+                style="@style/HeaderText"
                 android:text="TextView" />
 
             <Button

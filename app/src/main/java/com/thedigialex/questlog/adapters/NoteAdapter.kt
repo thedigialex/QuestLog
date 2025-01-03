@@ -20,14 +20,12 @@ class NoteAdapter(
     override fun getItemId(position: Int): Long = notes[position].id.toLong()
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        val view = convertView ?: LayoutInflater.from(context).inflate(R.layout.item_task, parent, false)
-
+        val view = convertView ?: LayoutInflater.from(context).inflate(R.layout.item_note, parent, false)
         val note = getItem(position)
-
-        val tvTaskDescription = view.findViewById<TextView>(R.id.tvTaskDescription)
-
-        tvTaskDescription.text = note.title
-
+        val tvNoteTitle = view.findViewById<TextView>(R.id.tvNoteTitle)
+        val tvNoteDescription = view.findViewById<TextView>(R.id.tvNoteDescription)
+        tvNoteTitle.text = note.title
+        tvNoteDescription.text = note.description
         view.setOnClickListener {
             onNoteClick(note)
         }

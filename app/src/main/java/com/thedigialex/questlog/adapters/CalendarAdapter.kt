@@ -1,5 +1,6 @@
 package com.thedigialex.questlog.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,12 +8,13 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.thedigialex.questlog.R
 import com.thedigialex.questlog.models.TaskLog
+import java.util.Calendar
 
 
 class CalendarAdapter(private val days: List<DayItem>, private val onDayClick: (DayItem) -> Unit) :
     RecyclerView.Adapter<CalendarAdapter.DayViewHolder>() {
 
-    data class DayItem(val day: Int?, val taskLogs: List<TaskLog>)
+    data class DayItem(val day: Int?, val taskLogs: List<TaskLog>, val isToday: Boolean)
 
     class DayViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val dayTextView: TextView = itemView.findViewById(R.id.dayTextView)
@@ -34,6 +36,9 @@ class CalendarAdapter(private val days: List<DayItem>, private val onDayClick: (
             holder.itemView.visibility = View.VISIBLE
             holder.itemView.setOnClickListener {
                 onDayClick(dayItem)
+            }
+            if (dayItem.isToday) {
+                holder.itemView.setBackgroundResource(R.drawable.calendar_today_background)
             }
         } else {
             holder.itemView.visibility = View.INVISIBLE

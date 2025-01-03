@@ -1,11 +1,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/userLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/ic_launcher_background"
     android:orientation="vertical"
-    android:visibility="gone">
+    android:visibility="visible">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -61,7 +62,8 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:hint="Select Class" />
+                    android:hint="Select Class"
+                    tools:visibility="gone" />
             </LinearLayout>
 
             <EditText
@@ -79,7 +81,7 @@
         android:layout_width="match_parent"
         android:layout_height="64dp"
         android:hint="Select Background"
-        android:visibility="visible" />
+        android:visibility="gone" />
 
     <Button
         android:id="@+id/btnSaveChanges"

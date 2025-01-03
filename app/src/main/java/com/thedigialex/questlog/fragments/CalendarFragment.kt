@@ -32,12 +32,16 @@ class CalendarFragment(private val userController: UserController) : Fragment() 
         monthTextView = view.findViewById(R.id.tvMonth)
         dayDetailLayout = view.findViewById(R.id.dayDetailLayout)
         calendar = Calendar.getInstance()
-        updateCalendar()
 
         view.findViewById<Button>(R.id.btnDecreaseMonth).setOnClickListener { changeMonth(-1) }
         view.findViewById<Button>(R.id.btnIncreaseMonth).setOnClickListener { changeMonth(1) }
         view.findViewById<Button>(R.id.btnCloseDayDetail).setOnClickListener { dayDetailLayout.visibility = View.GONE }
         return view
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateCalendar()
     }
 
     private fun updateCalendar() {
@@ -53,13 +57,19 @@ class CalendarFragment(private val userController: UserController) : Fragment() 
         val firstDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK) - 1
         val days = mutableListOf<CalendarAdapter.DayItem>()
 
+        val today = Calendar.getInstance()
+        val todayDay = today.get(Calendar.DAY_OF_MONTH)
+        val todayMonth = today.get(Calendar.MONTH)
+        val todayYear = today.get(Calendar.YEAR)
+
         repeat(firstDayOfWeek) {
-            days.add(CalendarAdapter.DayItem(null, emptyList()))
+            days.add(CalendarAdapter.DayItem(null, emptyList(), false)) // no day, so false for isToday
         }
 
         for (day in 1..daysInMonth) {
             val date = String.format("%04d-%02d-%02d", year, month + 1, day)
-            days.add(CalendarAdapter.DayItem(day, groupedLogs[date] ?: emptyList()))
+            val isToday = day == todayDay && month == todayMonth && year == todayYear
+            days.add(CalendarAdapter.DayItem(day, groupedLogs[date] ?: emptyList(), isToday))
         }
 
         calendarRecyclerView.layoutManager = GridLayoutManager(requireContext(), 7)
