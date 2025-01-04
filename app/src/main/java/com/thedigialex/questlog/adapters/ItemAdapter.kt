@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import com.thedigialex.questlog.R
 import com.thedigialex.questlog.models.Item
@@ -21,18 +22,24 @@ class ItemAdapter(
     override fun getItemId(position: Int): Long = items[position].id.toLong()
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        val view = convertView ?: LayoutInflater.from(context).inflate(R.layout.item_task, parent, false)
+        val view = convertView ?: LayoutInflater.from(context).inflate(R.layout.item_shop, parent, false)
 
         val item = getItem(position)
 
-        val tvTaskDescription = view.findViewById<TextView>(R.id.tvTaskDescription)
-        val tvTaskType = view.findViewById<TextView>(R.id.tvTaskType)
-        val btnLogTask = view.findViewById<Button>(R.id.btnLogTask)
+        val tvShopTitle = view.findViewById<TextView>(R.id.tvShopTitle)
+        val tvShopType = view.findViewById<TextView>(R.id.tvShopType)
+        val btnItemBuy = view.findViewById<Button>(R.id.btnItemBuy)
+        val ivAvatarPreview = view.findViewById<ImageView>(R.id.ivAvatarPreview)
+        ivAvatarPreview.visibility = View.GONE
+        if(item.type == "Avatar"){
+            ivAvatarPreview.visibility = View.VISIBLE
+            ivAvatarPreview.setBackgroundResource(item.imageValue)
+        }
 
-        tvTaskDescription.text = item.resource
-        tvTaskType.text = item.type
+        tvShopTitle.text = item.resource
+        tvShopType.text = item.type
 
-        btnLogTask.setOnClickListener {
+        btnItemBuy.setOnClickListener {
             purchaseItem(item)
         }
 

@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
@@ -38,7 +37,7 @@ class ShopFragment(private val userController: UserController) : Fragment() {
     private fun loadItems() {
         items = userController.dbHelper.getItems(0)
         userController.currentUser = userController.dbHelper.getUser()
-        tvShopCoinAmount.setText("Level: "+userController.currentUser.level + "\nCoins: "+userController.currentUser.coins)
+        tvShopCoinAmount.text = "Level: "+userController.currentUser.level + "\nCoins: "+userController.currentUser.coins
 
         if (items.isEmpty()) {
             Toast.makeText(requireContext(), "No tasks with the selected status.", Toast.LENGTH_SHORT).show()

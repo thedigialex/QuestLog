@@ -71,9 +71,6 @@
             android:hint="Task Description"
             android:padding="16dp" />
 
-        <!-- Task type (could use a Spinner or Radio buttons) -->
-
-        <!-- Repeat field (for example, a number picker or input box) -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="64dp"

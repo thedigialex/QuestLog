@@ -40,6 +40,7 @@ class DashboardActivity : AppCompatActivity() {
         if (playerSettingsMenu.visibility == View.VISIBLE) {
             playerSettingsMenu.visibility = View.GONE
         } else {
+            userController.setUpLayoutValues()
             playerSettingsMenu.visibility = View.VISIBLE
         }
     }
@@ -52,7 +53,10 @@ class DashboardActivity : AppCompatActivity() {
         val avatarImageResourceId: Int = R.drawable.avaterimagetest
         val totalItems = listOf(
             Item(type = "Avatar", resource = "Dino One", imageValue = avatarImageResourceId, cost = 500, levelRequired = 5),
-            Item(type = "Title", resource = "The Guy", cost = 50, levelRequired = 1)
+            Item(type = "Title", resource = "The Guy", cost = 50, levelRequired = 1),
+                    Item(type = "Avatar", resource = "Dino Onet", imageValue = avatarImageResourceId, cost = 500, levelRequired = 5),
+        Item(type = "Avatar", resource = "Dino Onett", imageValue = avatarImageResourceId, cost = 500, levelRequired = 5),
+        Item(type = "Avatar", resource = "Dino Onettt", imageValue = avatarImageResourceId, cost = 500, levelRequired = 5),
         )
         totalItems.forEach { item ->
             val isInObtained = obtainedItems.any { it.type == item.type && it.resource == item.resource }

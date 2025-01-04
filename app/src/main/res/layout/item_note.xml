@@ -9,14 +9,12 @@
         android:id="@+id/tvNoteTitle"
         android:layout_width="match_parent"
         android:layout_height="24dp"
-        android:textColor="@android:color/darker_gray"
-        android:textSize="14sp" />
+        style="@style/Text" />
 
     <TextView
         android:id="@+id/tvNoteDescription"
         android:layout_width="match_parent"
         android:layout_height="32dp"
-        android:textColor="@android:color/black"
-        android:textSize="16sp" />
+        style="@style/SubText" />
 
 </LinearLayout>

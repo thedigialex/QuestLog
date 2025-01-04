@@ -45,7 +45,7 @@ class UserController(private val activity: AppCompatActivity, private val layout
         }
     }
 
-    private fun setUpLayoutValues() {
+    fun setUpLayoutValues() {
         var visibility = View.GONE
         if (!currentUser.isNew) {
             visibility = View.VISIBLE

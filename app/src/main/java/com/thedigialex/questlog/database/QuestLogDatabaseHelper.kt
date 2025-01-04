@@ -253,15 +253,11 @@ class QuestLogDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
                     coinsReward = 100
                 }
             }
-            //To Do fix for monthly exp gained
-            //Need to add a loop
-
             user.coins += coinsReward
             user.exp += expReward
-            if (user.exp >= user.level * 25) {
-                user.level +=  1
+            while (user.exp >= user.level * 25) {
                 user.exp -= user.level * 25
-
+                user.level += 1
                 if (user.exp < 0) {
                     user.exp = 0
                 }
@@ -397,17 +393,6 @@ class QuestLogDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
             }
         }
         return logs
-    }
-
-    private fun getIdsFromTable(tableName: String, obtained: Int): List<Int> {
-        val ids = mutableListOf<Int>()
-        val cursor = readableDatabase.rawQuery("SELECT id FROM $tableName WHERE obtained = $obtained", null)
-        cursor.use {
-            while (it.moveToNext()) {
-                ids.add(it.getInt(it.getColumnIndexOrThrow("id")))
-            }
-        }
-        return ids
     }
 
     private fun ensureTaskLogValidity(task: Task) {
