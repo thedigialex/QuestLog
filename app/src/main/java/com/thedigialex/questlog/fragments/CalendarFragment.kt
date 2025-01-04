@@ -35,7 +35,7 @@ class CalendarFragment(private val userController: UserController) : Fragment() 
 
         view.findViewById<Button>(R.id.btnDecreaseMonth).setOnClickListener { changeMonth(-1) }
         view.findViewById<Button>(R.id.btnIncreaseMonth).setOnClickListener { changeMonth(1) }
-        view.findViewById<Button>(R.id.btnCloseDayDetail).setOnClickListener { dayDetailLayout.visibility = View.GONE }
+        view.findViewById<Button>(R.id.btnCloseDayDetail).setOnClickListener { closeDayDetails() }
         return view
     }
 
@@ -48,13 +48,14 @@ class CalendarFragment(private val userController: UserController) : Fragment() 
         val year = calendar.get(Calendar.YEAR)
         val month = calendar.get(Calendar.MONTH)
 
+        calendar.set(year, month, 1)
+        val firstDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK) - Calendar.SUNDAY
         monthTextView.text = SimpleDateFormat("MMMM\nyyyy", Locale.getDefault()).format(calendar.time)
 
         val taskLogs = userController.dbHelper.getTaskLogsForMonth(month + 1, year)
         val groupedLogs = taskLogs.groupBy { it.loggedDate }
 
         val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
-        val firstDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK) - 1
         val days = mutableListOf<CalendarAdapter.DayItem>()
 
         val today = Calendar.getInstance()
@@ -79,6 +80,7 @@ class CalendarFragment(private val userController: UserController) : Fragment() 
     }
 
     private fun openDayDetails(dayItem: CalendarAdapter.DayItem) {
+        calendarRecyclerView.visibility = View.GONE
         dayDetailLayout.visibility = View.VISIBLE
         val tvDayTitle = dayDetailLayout.findViewById<TextView>(R.id.tvDayTitle)
         val tvDayContent = dayDetailLayout.findViewById<TextView>(R.id.tvDayContent)
@@ -99,5 +101,10 @@ class CalendarFragment(private val userController: UserController) : Fragment() 
     private fun changeMonth(offset: Int) {
         calendar.add(Calendar.MONTH, offset)
         updateCalendar()
+    }
+
+    private fun closeDayDetails(){
+        dayDetailLayout.visibility = View.GONE
+        calendarRecyclerView.visibility = View.VISIBLE
     }
 }

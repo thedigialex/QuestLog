@@ -2,11 +2,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:paddingStart="16dp"
+    android:paddingTop="4dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="4dp">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="56dp"
         android:orientation="horizontal">
 
         <TextView
@@ -17,11 +20,11 @@
 
         <TextView
             android:id="@+id/tvShopTitle"
+            style="@style/HeaderText"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="2"
-            style="@style/HeaderText"
-            android:text="Shop"/>
+            android:text="Shop" />
 
         <TextView
             android:id="@+id/tvShopCoinAmount"

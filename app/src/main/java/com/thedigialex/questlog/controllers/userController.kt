@@ -164,7 +164,7 @@ class UserController(private val activity: AppCompatActivity, private val layout
         }
 
         setUpHeaderValues()
-
+        layoutView.visibility = View.GONE
         if (dbHelper.saveUser(currentUser)) {
             navigateToDashboard()
         }

@@ -22,12 +22,14 @@ class TaskListFragment(private val userController: UserController) : Fragment() 
 
     private lateinit var taskListView: ListView
     private lateinit var newTaskButton: Button
+    private lateinit var btnTaskClose: Button
     private lateinit var taskInputSection: View
     private lateinit var taskDescriptionInput: EditText
     private lateinit var taskTypeSpinner: Spinner
     private lateinit var taskRepeatInput: CheckBox
     private lateinit var saveTaskButton: Button
     private lateinit var deleteTaskButton: Button
+    private lateinit var btnComplete: RadioButton
     private lateinit var tasks: List<Task>
     private val taskTypes = listOf("Daily", "Weekly", "Monthly")
 
@@ -39,13 +41,14 @@ class TaskListFragment(private val userController: UserController) : Fragment() 
 
         taskListView = view.findViewById(R.id.taskListView)
         newTaskButton = view.findViewById(R.id.btnShowEdit)
+        btnTaskClose = view.findViewById(R.id.btnTaskClose)
         taskInputSection = view.findViewById(R.id.editSection)
         taskDescriptionInput = view.findViewById(R.id.edtTaskDescription)
         taskTypeSpinner = view.findViewById(R.id.spinnerTaskType)
         taskRepeatInput = view.findViewById(R.id.repeatBox)
         saveTaskButton = view.findViewById(R.id.btnSaveTask)
         deleteTaskButton = view.findViewById(R.id.btnDeleteTask)
-        val btnComplete = view.findViewById<RadioButton>(R.id.btnComplete)
+        btnComplete = view.findViewById(R.id.btnComplete)
         val btnNotComplete = view.findViewById<RadioButton>(R.id.btnNotComplete)
         setTaskCompletionListener(btnComplete, 1)
         setTaskCompletionListener(btnNotComplete, 0)
@@ -61,7 +64,7 @@ class TaskListFragment(private val userController: UserController) : Fragment() 
         loadTasks()
 
         newTaskButton.setOnClickListener { switchVisibilityOfEdit(Task(isNew = true)) }
-
+        btnTaskClose.setOnClickListener { switchVisibilityOfEdit(Task(isNew = true)) }
         return view
     }
 
@@ -98,9 +101,8 @@ class TaskListFragment(private val userController: UserController) : Fragment() 
         val isInputSectionVisible = taskInputSection.visibility == View.VISIBLE
         taskInputSection.visibility = if (isInputSectionVisible) View.GONE else View.VISIBLE
         taskListView.visibility = if (isInputSectionVisible) View.VISIBLE else View.GONE
-        newTaskButton.text = if (isInputSectionVisible) "Add New" else "Close"
+        newTaskButton.visibility = if (isInputSectionVisible) View.VISIBLE else View.GONE
         deleteTaskButton.visibility = View.GONE
-
         if (taskInputSection.visibility == View.VISIBLE) {
             setUpEditView(task)
         }
@@ -109,7 +111,7 @@ class TaskListFragment(private val userController: UserController) : Fragment() 
             deleteTaskButton.setOnClickListener {
                 switchVisibilityOfEdit(task)
                 userController.dbHelper.deleteTaskAndLogs(task)
-                loadTasks()
+                loadTasks(if (btnComplete.isChecked) 1 else 0)
             }
         }
     }
@@ -128,7 +130,7 @@ class TaskListFragment(private val userController: UserController) : Fragment() 
             task.repeat = if (taskRepeatInput.isChecked) 1 else 0
 
             if (task.description.isEmpty()) {
-                Toast.makeText(requireContext(), "Please enter a task description", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Please enter a quest description", Toast.LENGTH_SHORT).show()
             } else {
                 userController.dbHelper.saveTask(task, task.isNew)
                 switchVisibilityOfEdit(task)

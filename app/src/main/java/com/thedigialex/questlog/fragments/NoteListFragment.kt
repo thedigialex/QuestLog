@@ -18,6 +18,7 @@ class  NoteListFragment(private val userController: UserController) : Fragment()
 
     private lateinit var noteListView: ListView
     private lateinit var newNoteButton: Button
+    private lateinit var btnCloseNote: Button
     private lateinit var noteInputSection: View
     private lateinit var edtNoteDescription: EditText
     private lateinit var edtNoteTitle: EditText
@@ -36,10 +37,12 @@ class  NoteListFragment(private val userController: UserController) : Fragment()
         edtNoteDescription = view.findViewById(R.id.edtNoteDescription)
         deleteNoteButton = view.findViewById(R.id.btnDeleteNote)
         newNoteButton = view.findViewById(R.id.btnShowEditNote)
+        btnCloseNote = view.findViewById(R.id.btnCloseNote)
         saveNoteButton = view.findViewById(R.id.btnSaveNote)
 
         loadNotes()
         newNoteButton.setOnClickListener { switchVisibilityOfEdit(Note(isNew = true)) }
+        btnCloseNote.setOnClickListener { switchVisibilityOfEdit(Note(isNew = true)) }
         return view
     }
 
@@ -47,7 +50,7 @@ class  NoteListFragment(private val userController: UserController) : Fragment()
         val isInputSectionVisible = noteInputSection.visibility == View.VISIBLE
         noteInputSection.visibility = if (isInputSectionVisible) View.GONE else View.VISIBLE
         noteListView.visibility = if (isInputSectionVisible) View.VISIBLE else View.GONE
-        newNoteButton.text = if (isInputSectionVisible) "Add New" else "Close"
+        newNoteButton.visibility = if (isInputSectionVisible) View.VISIBLE else View.GONE
         deleteNoteButton.visibility = View.GONE
 
         if (noteInputSection.visibility == View.VISIBLE) {

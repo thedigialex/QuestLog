@@ -3,11 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:paddingStart="16dp"
+    android:paddingTop="4dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="4dp">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="56dp"
         android:orientation="horizontal">
 
         <RadioGroup
@@ -29,7 +32,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="2"
-                android:text="Tasks" />
+                android:text="Quests" />
 
             <RadioButton
                 android:id="@+id/btnComplete"
@@ -67,12 +70,25 @@
         android:orientation="vertical"
         android:visibility="gone">
 
-        <EditText
-            android:id="@+id/edtTaskDescription"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="96dp"
-            android:hint="Task Description"
-            android:padding="16dp" />
+            android:layout_height="64dp"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/edtTaskDescription"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:hint="Quest Description"
+                android:padding="16dp" />
+
+            <Button
+                android:id="@+id/btnTaskClose"
+                android:layout_width="64dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/close_button" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -118,8 +134,8 @@
 
         <Button
             android:id="@+id/btnSaveTask"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_margin="8dp"
             android:background="@drawable/save_button" />
 

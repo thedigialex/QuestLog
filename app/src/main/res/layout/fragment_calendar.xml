@@ -2,11 +2,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:paddingStart="16dp"
+    android:paddingTop="4dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="4dp">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="56dp"
         android:orientation="horizontal">
 
         <Button
@@ -17,10 +20,10 @@
 
         <TextView
             android:id="@+id/tvMonth"
+            style="@style/HeaderText"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="2"
-            style="@style/HeaderText" />
+            android:layout_weight="2" />
 
         <Button
             android:id="@+id/btnIncreaseMonth"
@@ -55,17 +58,18 @@
 
             <TextView
                 android:id="@+id/tvDayTitle"
+                style="@style/HeaderText"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                style="@style/HeaderText"
+                android:gravity="center|start"
                 android:text="TextView" />
 
             <Button
                 android:id="@+id/btnCloseDayDetail"
                 android:layout_width="64dp"
                 android:layout_height="match_parent"
-                android:text="Button" />
+                android:background="@drawable/close_button" />
         </LinearLayout>
 
         <ScrollView
@@ -79,6 +83,7 @@
 
                 <TextView
                     android:id="@+id/tvDayContent"
+                    style="@style/SubText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="TextView" />

@@ -29,7 +29,7 @@ class CalendarAdapter(private val days: List<DayItem>, private val onDayClick: (
 
         if (dayItem.day != null) {
             holder.dayTextView.text = dayItem.day.toString()
-            holder.taskCountTextView.text = "${dayItem.taskLogs.size} Tasks"
+            holder.taskCountTextView.text = "${dayItem.taskLogs.size}"
             holder.itemView.visibility = View.VISIBLE
             holder.itemView.setOnClickListener {
                 onDayClick(dayItem)
