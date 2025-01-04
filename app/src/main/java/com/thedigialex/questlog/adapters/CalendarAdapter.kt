@@ -1,6 +1,5 @@
 package com.thedigialex.questlog.adapters
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,8 +7,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.thedigialex.questlog.R
 import com.thedigialex.questlog.models.TaskLog
-import java.util.Calendar
-
 
 class CalendarAdapter(private val days: List<DayItem>, private val onDayClick: (DayItem) -> Unit) :
     RecyclerView.Adapter<CalendarAdapter.DayViewHolder>() {

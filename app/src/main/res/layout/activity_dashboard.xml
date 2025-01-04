@@ -51,8 +51,8 @@
             android:id="@+id/btnPlayerSettings"
             android:layout_width="64dp"
             android:layout_height="match_parent"
-            android:onClick="switchVisibilityOfPlayerSettings"
-            android:text="Action" />
+            android:background="@drawable/menu_button"
+            android:onClick="switchVisibilityOfPlayerSettings" />
     </LinearLayout>
 
     <com.google.android.material.tabs.TabLayout

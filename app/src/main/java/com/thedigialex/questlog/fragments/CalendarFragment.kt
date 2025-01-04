@@ -63,7 +63,7 @@ class CalendarFragment(private val userController: UserController) : Fragment() 
         val todayYear = today.get(Calendar.YEAR)
 
         repeat(firstDayOfWeek) {
-            days.add(CalendarAdapter.DayItem(null, emptyList(), false)) // no day, so false for isToday
+            days.add(CalendarAdapter.DayItem(null, emptyList(), false))
         }
 
         for (day in 1..daysInMonth) {
@@ -87,7 +87,7 @@ class CalendarFragment(private val userController: UserController) : Fragment() 
 
             val taskDescriptions = if (dayItem.taskLogs.isNotEmpty()) {
                 dayItem.taskLogs.joinToString(separator = "\n\n") { taskLog ->
-                    "${if (taskLog.isCompleted == 1) "X" else "_"}: ${taskLog.taskName}"
+                    "${if (taskLog.isCompleted == 1) "[X]" else "[_]"} ${taskLog.taskName}"
                 }
             } else {
                 "No tasks for this day."

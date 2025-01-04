@@ -14,6 +14,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="2"
+            android:checkedButton="@id/btnNotComplete"
             android:orientation="horizontal">
 
             <RadioButton
@@ -24,10 +25,10 @@
                 android:text="To Do" />
 
             <TextView
+                style="@style/HeaderText"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="2"
-                style="@style/HeaderText"
                 android:text="Tasks" />
 
             <RadioButton
@@ -54,13 +55,15 @@
         android:id="@+id/btnShowEdit"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:text="Add New Task" />
+        android:layout_margin="8dp"
+        android:background="@drawable/selection_button" />
 
     <LinearLayout
         android:id="@+id/editSection"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:gravity="center"
         android:orientation="vertical"
         android:visibility="gone">
 
@@ -92,38 +95,33 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1" />
-
-            <Button
-                android:id="@+id/btnDeleteTask"
-                android:layout_width="56dp"
-                android:layout_height="match_parent"
-                android:text="Button"
-                android:visibility="visible" />
-        </LinearLayout>
-
         <TextView
             android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1" />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:gravity="end"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnDeleteTask"
+                android:layout_width="32dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/delete_button"
+                android:visibility="visible" />
+        </LinearLayout>
+
 
         <Button
             android:id="@+id/btnSaveTask"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:padding="16dp"
-            android:text="Save Task" />
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_margin="8dp"
+            android:background="@drawable/save_button" />
 
     </LinearLayout>
 </LinearLayout>

@@ -44,5 +44,5 @@
         android:id="@+id/btnItemBuy"
         android:layout_width="64dp"
         android:layout_height="64dp"
-        android:text="Action" />
+        android:background="@drawable/shop_button" />
 </LinearLayout>

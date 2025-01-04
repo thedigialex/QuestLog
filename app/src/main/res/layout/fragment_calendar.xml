@@ -11,10 +11,9 @@
 
         <Button
             android:id="@+id/btnDecreaseMonth"
-            android:layout_width="0dp"
+            android:layout_width="64dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="Button" />
+            android:background="@drawable/select_button" />
 
         <TextView
             android:id="@+id/tvMonth"
@@ -25,10 +24,10 @@
 
         <Button
             android:id="@+id/btnIncreaseMonth"
-            android:layout_width="0dp"
+            android:layout_width="64dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="Button" />
+            android:background="@drawable/select_button"
+            android:rotationY="180" />
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView

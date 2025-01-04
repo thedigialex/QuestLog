@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/ic_launcher_background"
+    android:gravity="center"
     android:orientation="vertical"
     android:visibility="visible">
 
@@ -69,12 +70,12 @@
 
             <EditText
                 android:id="@+id/editUsername"
+                style="@style/Text"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:hint="Edit Username"
-                android:inputType="text"
-                style="@style/Text"/>
+                android:inputType="text" />
         </LinearLayout>
     </LinearLayout>
 
@@ -87,8 +88,8 @@
 
     <Button
         android:id="@+id/btnSaveChanges"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:text="Save Changes" />
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:background="@drawable/save_button" />
 
 </LinearLayout>

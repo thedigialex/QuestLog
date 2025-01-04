@@ -47,7 +47,6 @@ class TaskListFragment(private val userController: UserController) : Fragment() 
         deleteTaskButton = view.findViewById(R.id.btnDeleteTask)
         val btnComplete = view.findViewById<RadioButton>(R.id.btnComplete)
         val btnNotComplete = view.findViewById<RadioButton>(R.id.btnNotComplete)
-        btnNotComplete.isChecked = true
         setTaskCompletionListener(btnComplete, 1)
         setTaskCompletionListener(btnNotComplete, 0)
 
