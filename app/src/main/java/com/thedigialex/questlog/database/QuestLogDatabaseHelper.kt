@@ -331,7 +331,7 @@ class QuestLogDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
                 )
             }
         }
-        return items
+        return items.sortedBy { it.levelRequired }
     }
 
     fun saveItem(item: Item, create: Boolean) {

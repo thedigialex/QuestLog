@@ -40,7 +40,7 @@ class UserController(private val activity: AppCompatActivity, private val layout
                     ivAvatar.setImageResource(avatarItem.imageValue)
                 }
             } else {
-                ivAvatar.setImageResource(R.drawable.calendar_today_background)
+                ivAvatar.setImageResource(R.drawable.avatar_zero)
             }
         }
     }
@@ -75,14 +75,14 @@ class UserController(private val activity: AppCompatActivity, private val layout
         spinnerAvatar.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 if(position == 0) {
-                    imageView.setImageResource(R.drawable.calendar_today_background)
+                    imageView.setImageResource(R.drawable.avatar_zero)
                 } else {
                 val selectedImageResId = avatarImages[position]
                 imageView.setImageResource(selectedImageResId)
                 }
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                imageView.setImageResource(R.drawable.calendar_today_background)
+                imageView.setImageResource(R.drawable.avatar_zero)
             }
         }
         val spinnerTitle: Spinner = layoutView.findViewById(R.id.spinnerTitle)

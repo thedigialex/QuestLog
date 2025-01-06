@@ -5,7 +5,7 @@ data class User(
     var username: String,
     var level: Int = 1,
     var exp: Int = 0,
-    var coins: Int = 10000,
+    var coins: Int = 0,
     var equippedAvatarId: Int = 0,
     var equippedBackgroundId: Int = 0,
     var equippedTitleId: Int = 0,

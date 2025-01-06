@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ListView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.thedigialex.questlog.R
 import com.thedigialex.questlog.adapters.ItemAdapter
@@ -40,7 +39,6 @@ class ShopFragment(private val userController: UserController) : Fragment() {
         tvShopCoinAmount.text = "Level: "+userController.currentUser.level + "\nCoins: "+userController.currentUser.coins
 
         if (items.isEmpty()) {
-            Toast.makeText(requireContext(), "No tasks with the selected status.", Toast.LENGTH_SHORT).show()
             itemsListView.adapter = null
         } else {
             val adapter = ItemAdapter(requireContext(), items) { item ->
@@ -51,7 +49,7 @@ class ShopFragment(private val userController: UserController) : Fragment() {
     }
 
     private fun purchaseItem(item: Item){
-        if(userController.currentUser.coins > item.cost){
+        if((userController.currentUser.coins > item.cost) && (userController.currentUser.level >= item.levelRequired)){
             userController.currentUser.coins -= item.cost
             userController.dbHelper.saveItem(item, false)
             loadItems()

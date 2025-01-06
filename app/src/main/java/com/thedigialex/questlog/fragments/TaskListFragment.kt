@@ -12,7 +12,6 @@ import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.RadioButton
 import android.widget.Spinner
-import android.widget.Toast
 import com.thedigialex.questlog.R
 import com.thedigialex.questlog.adapters.TaskAdapter
 import com.thedigialex.questlog.controllers.UserController
@@ -78,9 +77,7 @@ class TaskListFragment(private val userController: UserController) : Fragment() 
 
     private fun loadTasks(isCompleted: Int = 0) {
         tasks = userController.dbHelper.getTasks(isCompleted)
-
         if (tasks.isEmpty()) {
-            Toast.makeText(requireContext(), "No tasks with the selected status.", Toast.LENGTH_SHORT).show()
             taskListView.adapter = null
         } else {
             val adapter = TaskAdapter(requireContext(), tasks, { selectedTask ->
@@ -129,12 +126,10 @@ class TaskListFragment(private val userController: UserController) : Fragment() 
             task.type = taskTypeSpinner.selectedItem.toString()
             task.repeat = if (taskRepeatInput.isChecked) 1 else 0
 
-            if (task.description.isEmpty()) {
-                Toast.makeText(requireContext(), "Please enter a quest description", Toast.LENGTH_SHORT).show()
-            } else {
+            if (task.description.isNotEmpty()) {
                 userController.dbHelper.saveTask(task, task.isNew)
                 switchVisibilityOfEdit(task)
-                loadTasks()
+                loadTasks(if (btnComplete.isChecked) 1 else 0)
             }
         }
     }

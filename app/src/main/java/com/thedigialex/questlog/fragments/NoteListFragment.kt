@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ListView
 import android.widget.EditText
-import android.widget.Toast
 import com.thedigialex.questlog.R
 import com.thedigialex.questlog.adapters.NoteAdapter
 import com.thedigialex.questlog.controllers.UserController
@@ -69,7 +68,6 @@ class  NoteListFragment(private val userController: UserController) : Fragment()
     private fun loadNotes() {
         notes = userController.dbHelper.getNotes()
         if (notes.isEmpty()) {
-            Toast.makeText(requireContext(), "No notes available.", Toast.LENGTH_SHORT).show()
             noteListView.adapter = null
         } else {
             val adapter = NoteAdapter(requireContext(), notes) { selectedNote ->
