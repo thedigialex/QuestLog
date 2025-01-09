@@ -8,7 +8,7 @@
                     android:viewportHeight="24"
                     android:viewportWidth="24">
 
-                    <path android:fillColor="@color/green"
+                    <path android:fillColor="@color/light_accent"
                         android:pathData="M17.77,3.77l-1.77,-1.77l-10,10l10,10l1.77,-1.77l-8.23,-8.23z"/>
                 </vector>
             </item>
@@ -22,7 +22,7 @@
             android:viewportHeight="24"
             android:viewportWidth="24">
 
-            <path android:fillColor="@color/green"
+            <path android:fillColor="@color/accent"
                 android:pathData="M17.77,3.77l-1.77,-1.77l-10,10l10,10l1.77,-1.77l-8.23,-8.23z"/>
         </vector>
     </item>

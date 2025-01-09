@@ -4,7 +4,7 @@
     android:id="@+id/userLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/ic_launcher_background"
+    android:background="@color/grey"
     android:gravity="center"
     android:orientation="vertical"
     android:visibility="visible">
@@ -75,7 +75,11 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:hint="Edit Username"
-                android:inputType="text" />
+                android:inputType="text"
+                android:textColor="@color/dark_white"
+                android:textColorHighlight="@color/dark_grey"
+                android:textColorHint="@color/dark_grey"
+                android:textColorLink="@color/accent" />
         </LinearLayout>
     </LinearLayout>
 

@@ -7,7 +7,7 @@
                     android:height="48dp"
                     android:viewportWidth="24.0"
                     android:viewportHeight="24.0">
-                    <path android:fillColor="@color/green" android:pathData="M14.59,8L12,10.59 9.41,8 8,9.41 10.59,12 8,14.59 9.41,16 12,13.41 14.59,16 16,14.59 13.41,12 16,9.41z"/>
+                    <path android:fillColor="@color/light_accent" android:pathData="M14.59,8L12,10.59 9.41,8 8,9.41 10.59,12 8,14.59 9.41,16 12,13.41 14.59,16 16,14.59 13.41,12 16,9.41z"/>
                 </vector>
             </item>
             <item>
@@ -15,7 +15,7 @@
                     <solid android:color="@android:color/transparent" />
                     <stroke
                         android:width="4dp"
-                        android:color="@color/green" />
+                        android:color="@color/light_accent" />
                     <corners android:radius="4dp" />
                 </shape>
             </item>
@@ -27,7 +27,7 @@
             <solid android:color="@android:color/transparent" />
             <stroke
                 android:width="4dp"
-                android:color="@color/green" />
+                android:color="@color/accent" />
             <corners android:radius="4dp" />
         </shape>
     </item>

@@ -4,14 +4,16 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:paddingStart="16dp"
-    android:paddingTop="4dp"
+    android:paddingTop="0dp"
     android:paddingEnd="16dp"
     android:paddingBottom="4dp">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:orientation="horizontal">
+        android:layout_height="64dp"
+        android:background="@drawable/header_section"
+        android:orientation="horizontal"
+        android:paddingBottom="8dp">
 
         <RadioGroup
             android:layout_width="0dp"
@@ -25,7 +27,8 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="To Do" />
+                android:text="To Do"
+                android:textColorLink="@color/accent" />
 
             <TextView
                 style="@style/HeaderText"
@@ -39,7 +42,8 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="Done" />
+                android:text="Done"
+                android:textColorLink="@color/accent" />
 
         </RadioGroup>
 

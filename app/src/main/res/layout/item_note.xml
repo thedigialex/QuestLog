@@ -9,7 +9,8 @@
         android:id="@+id/tvNoteTitle"
         style="@style/Text"
         android:layout_width="match_parent"
-        android:layout_height="24dp" />
+        android:layout_height="24dp"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/tvNoteDescription"

@@ -37,7 +37,7 @@ class ItemAdapter(
         }
 
         tvShopTitle.text = item.resource
-        tvShopType.text = "Type: " + item.type + " Level Required: " + item.levelRequired
+        tvShopType.text = "Type: " + item.type + "\nLevel: " + item.levelRequired + " Coins: " +item.cost
 
         btnItemBuy.setOnClickListener {
             purchaseItem(item)
