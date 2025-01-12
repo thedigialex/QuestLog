@@ -89,7 +89,13 @@ class CalendarFragment(private val userController: UserController) : Fragment() 
 
             val taskDescriptions = if (dayItem.taskLogs.isNotEmpty()) {
                 dayItem.taskLogs.joinToString(separator = "\n\n") { taskLog ->
-                    "${if (taskLog.isCompleted == 1) "[X]" else "[_]"} ${taskLog.taskName}"
+                    "${when (taskLog.isCompleted) {
+                        1 -> "[X]"
+                        0 -> "[_]"
+                        2 -> "[O]"
+                        else -> "[?]"
+                    }} ${taskLog.taskName}"
+
                 }
             } else {
                 "No tasks for this day."

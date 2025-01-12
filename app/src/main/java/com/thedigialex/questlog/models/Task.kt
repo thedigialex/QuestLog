@@ -9,4 +9,3 @@ data class Task(
     var isNew: Boolean = false,
     var isCompleted: Int = 0
 )
-

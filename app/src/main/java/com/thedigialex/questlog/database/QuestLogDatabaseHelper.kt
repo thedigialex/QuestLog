@@ -5,6 +5,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
 import com.thedigialex.questlog.models.*
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -198,7 +199,7 @@ class QuestLogDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         if (create) {
             val newId = writableDatabase.insert("Tasks", null, values).takeIf { it != -1L }?.toInt() ?: task.id
             task.id = newId
-            ensureTaskLogValidity(task)
+            ensureTaskLogValidity(task, false)
         } else {
             writableDatabase.update("Tasks", values, "id = ?", arrayOf(task.id.toString()))
         }
@@ -211,7 +212,7 @@ class QuestLogDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         writableDatabase.execSQL(deleteTaskQuery, arrayOf(task.id.toString()))
     }
 
-    fun logTask(task: Task, create: Boolean) {
+    fun logTask(task: Task, create: Boolean, close: Boolean = false) {
         if (create) {
             val values = ContentValues().apply {
                 put("taskId", task.id)
@@ -225,13 +226,14 @@ class QuestLogDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
             val values = ContentValues().apply {
                 put("id", taskLog.id)
                 put("loggedDate", taskLog.loggedDate)
-                put("isCompleted", 1)
+                put("isCompleted", if (close) 2 else 1)
             }
+
             writableDatabase.update(
                 "TaskLogs",
                 values,
-                "id = ? AND strftime('%Y-%m-%d', loggedDate) = ?",
-                arrayOf(taskLog.id.toString(), SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date()))
+                "id = ?",
+                arrayOf(taskLog.id.toString())
             )
 
             val user = getUser()
@@ -267,9 +269,13 @@ class QuestLogDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
     }
 
     fun checkLogDateForRepeating() {
-        val tasks = getTasks(0, 1)
-        for (task in tasks) {
-            ensureTaskLogValidity(task)
+        val repeatingTaskCheck = getTasks(0, 1)
+        for (task in repeatingTaskCheck) {
+            ensureTaskLogValidity(task, false)
+        }
+        val nonRepeatingTaskCheck = getTasks(0, 0)
+        for (task in nonRepeatingTaskCheck) {
+            ensureTaskLogValidity(task, true)
         }
     }
 
@@ -395,9 +401,9 @@ class QuestLogDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         return logs
     }
 
-    private fun ensureTaskLogValidity(task: Task) {
+    private fun ensureTaskLogValidity(task: Task, close: Boolean) {
         if (task.currentLogId == 0 || !isCurrentLogValid(task)) {
-            logTask(task, true)
+            logTask(task, !close, close)
         }
     }
 
