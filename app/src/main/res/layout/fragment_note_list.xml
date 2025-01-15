@@ -1,6 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center"
     android:orientation="vertical"
     android:paddingStart="16dp"
     android:paddingTop="0dp"
@@ -49,11 +50,10 @@
 
     <Button
         android:id="@+id/btnShowEditNote"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
         android:layout_margin="8dp"
-        android:background="@drawable/selection_button"
-        android:text="Add New Note" />
+        android:background="@drawable/selection_button" />
 
     <LinearLayout
         android:id="@+id/editSectionNote"

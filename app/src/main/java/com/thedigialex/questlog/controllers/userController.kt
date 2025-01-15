@@ -60,7 +60,7 @@ class UserController(private val activity: AppCompatActivity, private val layout
         editUsername.setText(currentUser.username)
         val spinnerAvatar: Spinner = layoutView.findViewById(R.id.spinnerAvatar)
         val imageView: ImageView = layoutView.findViewById(R.id.imageView)
-        val avatarNames = listOf("") + currentUser.avatarObtained.map { it.resource }
+        val avatarNames = listOf("Default") + currentUser.avatarObtained.map { it.resource }
         val avatarImages = listOf(0) + currentUser.avatarObtained.map { it.imageValue }
 
         val avatarAdapter = ArrayAdapter(activity, android.R.layout.simple_spinner_item, avatarNames)
@@ -86,7 +86,7 @@ class UserController(private val activity: AppCompatActivity, private val layout
             }
         }
         val spinnerTitle: Spinner = layoutView.findViewById(R.id.spinnerTitle)
-        val titleNames = listOf("") + currentUser.titleObtained.map { it.resource }
+        val titleNames = listOf("Select a title") + currentUser.titleObtained.map { it.resource }
         val titleAdapter = ArrayAdapter(activity, android.R.layout.simple_spinner_item, titleNames)
         titleAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerTitle.adapter = titleAdapter
@@ -96,7 +96,6 @@ class UserController(private val activity: AppCompatActivity, private val layout
             currentUser.titleObtained.indexOfFirst { it.id == currentUser.equippedTitleId } + 1
         }
         spinnerTitle.setSelection(titlePosition)
-
 
         val classNames = listOf("") + currentUser.classObtained.map { it.resource }
         val classAdapter = ArrayAdapter(activity, android.R.layout.simple_spinner_item, classNames)
@@ -108,6 +107,7 @@ class UserController(private val activity: AppCompatActivity, private val layout
             currentUser.classObtained.indexOfFirst { it.id == currentUser.equippedClassId } + 1
         }
         spinnerClass.setSelection(classPosition)
+
         val spinnerBackground: Spinner = layoutView.findViewById(R.id.spinnerBackground)
         val backgroundNames = listOf("") + currentUser.backgroundObtained.map { it.resource }
         val backgroundAdapter = ArrayAdapter(activity, android.R.layout.simple_spinner_item, backgroundNames)
@@ -133,7 +133,7 @@ class UserController(private val activity: AppCompatActivity, private val layout
 
         val spinnerAvatar: Spinner = layoutView.findViewById(R.id.spinnerAvatar)
         val selectedAvatarName = spinnerAvatar.selectedItem as String
-        if (selectedAvatarName.isNotEmpty()) {
+        if (selectedAvatarName != "Default") {
             currentUser.equippedAvatarId = currentUser.avatarObtained.first { it.resource == selectedAvatarName }.id
         } else {
             currentUser.equippedAvatarId = 0
@@ -141,7 +141,7 @@ class UserController(private val activity: AppCompatActivity, private val layout
 
         val spinnerTitle: Spinner = layoutView.findViewById(R.id.spinnerTitle)
         val selectedTitleName = spinnerTitle.selectedItem as String
-        if (selectedTitleName.isNotEmpty()) {
+        if (selectedTitleName != "Select a title") {
             currentUser.equippedTitleId = currentUser.titleObtained.first { it.resource == selectedTitleName }.id
         } else {
             currentUser.equippedTitleId = 0

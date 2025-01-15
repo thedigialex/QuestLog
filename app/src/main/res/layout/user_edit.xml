@@ -4,21 +4,22 @@
     android:id="@+id/userLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/grey"
+    android:background="@drawable/edit_section"
     android:gravity="center"
     android:orientation="vertical"
     android:visibility="visible">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="128dp"
+        android:layout_height="144dp"
         android:orientation="horizontal"
-        android:padding="8dp">
+        android:paddingTop="8dp">
 
         <LinearLayout
             android:id="@+id/imageLayout"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_marginEnd="8dp"
             android:layout_weight="2"
             android:gravity="center"
             android:orientation="vertical"
@@ -27,20 +28,25 @@
             <ImageView
                 android:id="@+id/imageView"
                 android:layout_width="64dp"
-                android:layout_height="64dp"
+                android:layout_height="0dp"
+                android:layout_marginBottom="8dp"
+                android:layout_weight="1"
                 app:srcCompat="@drawable/ic_launcher_foreground" />
 
             <Spinner
                 android:id="@+id/spinnerAvatar"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:layout_marginBottom="8dp"
                 android:layout_weight="1"
+                android:background="@drawable/dropdown"
                 android:hint="Select Avatar" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_marginStart="8dp"
             android:layout_weight="4"
             android:orientation="vertical">
 
@@ -48,6 +54,7 @@
                 android:id="@+id/titleLayout"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:layout_marginBottom="8dp"
                 android:layout_weight="1"
                 android:orientation="horizontal"
                 android:visibility="visible">
@@ -57,6 +64,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
+                    android:background="@drawable/dropdown"
                     android:hint="Select Avatar" />
 
                 <Spinner
@@ -73,10 +81,13 @@
                 style="@style/Text"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:layout_marginBottom="8dp"
                 android:layout_weight="1"
+                android:background="@drawable/input_box"
                 android:hint="Edit Username"
                 android:inputType="text"
-                android:textColor="@color/dark_white"
+                android:paddingStart="16dp"
+                android:textColor="@color/grey"
                 android:textColorHighlight="@color/dark_grey"
                 android:textColorHint="@color/dark_grey"
                 android:textColorLink="@color/accent" />
@@ -94,6 +105,7 @@
         android:id="@+id/btnSaveChanges"
         android:layout_width="64dp"
         android:layout_height="64dp"
+        android:layout_marginBottom="8dp"
         android:background="@drawable/save_button" />
 
 </LinearLayout>
