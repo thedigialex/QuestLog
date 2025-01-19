@@ -1,0 +1,238 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingStart="16dp"
+    android:paddingTop="0dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:background="@drawable/header_section"
+        android:orientation="horizontal"
+        android:paddingBottom="8dp">
+
+        <Button
+            android:id="@+id/btnOpenSettings"
+            android:layout_width="64dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/select_button" />
+
+        <TextView
+            android:id="@+id/tvBank"
+            style="@style/HeaderText"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:text="Bank" />
+
+        <Button
+            android:id="@+id/btnIncreaseMonth"
+            android:layout_width="64dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/select_button"
+            android:rotationY="180" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/transactionSection"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvIncome"
+                style="@style/SubText"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="TextView"
+                android:textColor="@color/green"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvBalance"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:text="TextView"
+                android:gravity="center"
+                style="@style/SubText"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/tvExpense"
+                style="@style/SubText"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="TextView"
+                android:textColor="@color/red"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:text="Recent Transactions"
+            android:gravity="center"
+            style="@style/SubText"
+            android:textStyle="bold" />
+
+        <ListView
+            android:id="@+id/transactionListView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:divider="@android:color/darker_gray"
+            android:dividerHeight="0.5dp"
+            tools:visibility="visible">
+
+        </ListView>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnShowEdit"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_margin="8dp"
+        android:background="@drawable/selection_button" />
+
+    <LinearLayout
+        android:id="@+id/editSection"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/edtTaskDescription"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:hint="Quest Description"
+                android:padding="16dp" />
+
+            <Button
+                android:id="@+id/btnEditClose"
+                android:layout_width="64dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/close_button" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/spinnerTaskType"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:padding="16dp" />
+
+            <CheckBox
+                android:id="@+id/repeatBox"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Repeat" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:gravity="end"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnDeleteTask"
+                android:layout_width="32dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/delete_button"
+                android:visibility="visible" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnSaveTask"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="8dp"
+            android:background="@drawable/save_button" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/settingSection"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/edtCurrentBalance"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:hint="Bank Balance"
+                android:padding="16dp"
+                android:inputType="number"/>
+
+            <Button
+                android:id="@+id/btnSettingSave"
+                android:layout_width="64dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/save_button" />
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/categoryListView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:divider="@android:color/darker_gray"
+            android:dividerHeight="0.5dp"
+            tools:visibility="visible" />
+
+        <Button
+            android:id="@+id/btnSaveSetting"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_margin="8dp"
+            android:background="@drawable/selection_button" />
+    </LinearLayout>
+</LinearLayout>

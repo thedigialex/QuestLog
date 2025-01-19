@@ -33,10 +33,11 @@ class DashboardActivity : AppCompatActivity() {
         viewPager.adapter = adapter
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             when (position) {
-                0 -> tab.text = "Quests"
-                1 -> tab.text = "Calendar"
-                2 -> tab.text = "Shop"
-                3 -> tab.text = "Notes"
+                0 -> tab.text = "Quest"
+                1 -> tab.text = "Bank"
+                2 -> tab.text = "Calendar"
+                3 -> tab.text = "Shop"
+                4 -> tab.text = "Notes"
             }
         }.attach()
     }
@@ -60,8 +61,6 @@ class DashboardActivity : AppCompatActivity() {
             R.drawable.avatar_seven, R.drawable.avatar_eight, R.drawable.avatar_nine,
             R.drawable.avatar_ten, R.drawable.avatar_eleven, R.drawable.avatar_twelve,
             R.drawable.avatar_thirteen, R.drawable.avatar_fourteen
-
-
         )
         val totalItems = listOf(
             Item(type = "Title", resource = "The Guy", cost = 50, levelRequired = 1),
@@ -95,7 +94,6 @@ class DashboardActivity : AppCompatActivity() {
             Item(type = "Avatar", resource = "Dino Eight", imageValue = avatarResources[8], cost = 2000, levelRequired = 5),
             Item(type = "Avatar", resource = "Dino Nine", imageValue = avatarResources[9], cost = 2000, levelRequired = 5),
             Item(type = "Avatar", resource = "Dino Ten", imageValue = avatarResources[10], cost = 2000, levelRequired = 5),
-
         )
         totalItems.forEach { item ->
             val isInObtained = obtainedItems.any { it.type == item.type && it.resource == item.resource }

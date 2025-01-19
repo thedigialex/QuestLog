@@ -8,16 +8,18 @@ import com.thedigialex.questlog.fragments.CalendarFragment
 import com.thedigialex.questlog.fragments.NoteListFragment
 import com.thedigialex.questlog.fragments.ShopFragment
 import com.thedigialex.questlog.fragments.TaskListFragment
+import com.thedigialex.questlog.fragments.TransactionListFragment
 
 class DashboardPagerAdapter(activity: AppCompatActivity, private val userController: UserController) : FragmentStateAdapter(activity) {
-    override fun getItemCount(): Int = 4
+    override fun getItemCount(): Int = 5
 
     override fun createFragment(position: Int): Fragment {
         return when (position) {
             0 -> TaskListFragment(userController)
-            1 -> CalendarFragment(userController)
-            2 -> ShopFragment(userController)
-            3 -> NoteListFragment(userController)
+            1 -> TransactionListFragment(userController)
+            2 -> CalendarFragment(userController)
+            3 -> ShopFragment(userController)
+            4 -> NoteListFragment(userController)
             else -> throw IllegalStateException("Unexpected position $position")
         }
     }

@@ -5,7 +5,6 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.util.Log
 import com.thedigialex.questlog.models.*
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -75,6 +74,36 @@ class QuestLogDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         );
         """
         )
+        db.execSQL(
+            """
+        CREATE TABLE Balance (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            current_balance INTEGER NOT NULL DEFAULT 0,
+            borrowed_balance INTEGER NOT NULL DEFAULT 0
+        );
+        """
+        )
+        db.execSQL(
+            """
+        CREATE TABLE Transactions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            type TEXT NOT NULL CHECK(type IN ('Income', 'Expense', 'Borrow')),
+            amount INTEGER NOT NULL,
+            category TEXT NOT NULL,
+            timestamp TEXT NOT NULL
+        );
+        """
+        )
+        db.execSQL(
+            """
+        CREATE TABLE Categories (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            type TEXT NOT NULL CHECK(type IN ('Income', 'Expense', 'Borrow')),
+            name TEXT NOT NULL,
+            target_amount INTEGER NOT NULL DEFAULT 0
+        );
+        """
+        )
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -101,9 +130,20 @@ class QuestLogDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
             put("equippedTitleId", currentUser.equippedTitleId)
             put("equippedClassId", currentUser.equippedClassId)
         }
+        val balanceValues = ContentValues().apply {
+            put("current_balance", 0)
+            put("borrowed_balance", 0)
+        }
+        val defaultCategories = ContentValues().apply {
+            put("type", "Income")
+            put("name", "Salary")
+            put("target_amount", 0)
+        }
 
         if (currentUser.id == 0) {
             writableDatabase.insert("Users", null, values)
+            writableDatabase.insert("Balance", null, balanceValues)
+            writableDatabase.insert("Categories", null, defaultCategories)
             return true
         } else {
             writableDatabase.update("Users", values, "id = ?", arrayOf(currentUser.id.toString()))
@@ -133,6 +173,62 @@ class QuestLogDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
                 )
             }
         }
+    }
+
+    fun getBankCategory(type: String): List<Category> {
+        val categories = mutableListOf<Category>()
+        val queryCategories = "SELECT * FROM Categories WHERE type = ?"
+        val cursorCategories = readableDatabase.rawQuery(queryCategories, arrayOf(type))
+        cursorCategories.use { cursor ->
+            while (cursor.moveToNext()) {
+                val categoryId = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
+                val categoryType = cursor.getString(cursor.getColumnIndexOrThrow("type"))
+                val categoryName = cursor.getString(cursor.getColumnIndexOrThrow("name"))
+                val targetAmount = cursor.getInt(cursor.getColumnIndexOrThrow("target_amount"))
+
+                val category = Category(
+                    id = categoryId,
+                    type = categoryType,
+                    name = categoryName,
+                    target_amount = targetAmount
+                )
+                categories.add(category)
+            }
+        }
+        return categories
+    }
+
+    fun getBalance(): Balance {
+        val query = "SELECT * FROM Balance LIMIT 1"
+        val cursor = readableDatabase.rawQuery(query, null)
+
+        cursor.use {
+            if (it.moveToFirst()) { // Ensure there is at least one row
+                val id = it.getInt(it.getColumnIndexOrThrow("id"))
+                val currentBalance = it.getInt(it.getColumnIndexOrThrow("current_balance"))
+                val borrowedBalance = it.getInt(it.getColumnIndexOrThrow("borrowed_balance"))
+                return Balance(
+                    id = id,
+                    current_balance = currentBalance,
+                    borrowed_balance = borrowedBalance
+                )
+            } else {
+                throw IllegalStateException("Balance table is empty. Ensure a balance row is created during user creation.")
+            }
+        }
+    }
+
+    fun updateBalance(balance: Balance): Int {
+        val contentValues = ContentValues().apply {
+            put("current_balance", balance.current_balance)
+            put("borrowed_balance", balance.borrowed_balance)
+        }
+        return writableDatabase.update(
+            "Balance",
+            contentValues,
+            "id = ?",
+            arrayOf("1")
+        )
     }
 
     fun getTasks(isCompleted: Int, getRepeat: Int = 0): List<Task> {
