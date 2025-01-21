@@ -52,7 +52,7 @@
         android:id="@+id/btnShowEditNote"
         android:layout_width="64dp"
         android:layout_height="64dp"
-        android:layout_margin="8dp"
+        android:layout_marginBottom="8dp"
         android:background="@drawable/selection_button" />
 
     <LinearLayout
@@ -109,8 +109,9 @@
 
         <Button
             android:id="@+id/btnSaveNote"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginBottom="8dp"
             android:background="@drawable/save_button"
             android:padding="16dp" />
 

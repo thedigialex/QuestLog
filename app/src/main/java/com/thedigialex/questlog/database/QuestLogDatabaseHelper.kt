@@ -190,12 +190,91 @@ class QuestLogDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
                     id = categoryId,
                     type = categoryType,
                     name = categoryName,
-                    target_amount = targetAmount
+                    target_amount = targetAmount,
+                    isNew = false
                 )
                 categories.add(category)
             }
         }
         return categories
+    }
+    fun updateCategory(category: Category) {
+        val contentValues = ContentValues().apply {
+            put("type", category.type)
+            put("name", category.name)
+            put("target_amount", category.target_amount)
+        }
+        if (category.isNew) {
+            writableDatabase.insert("Categories", null, contentValues)
+        } else {
+            writableDatabase.update(
+                "Categories",
+                contentValues,
+                "id = ?",
+                arrayOf(category.id.toString())
+            )
+        }
+    }
+    fun deleteCategory(categoryId: Int) {
+        writableDatabase.delete(
+            "Categories",
+            "id = ?",
+            arrayOf(categoryId.toString())
+        )
+    }
+
+    fun getTransactions(year: Int, month: Int): List<Transaction> {
+        val transactions = mutableListOf<Transaction>()
+        val monthString = month.toString().padStart(2, '0')
+        val queryTransactions = """
+        SELECT * FROM Transactions
+        WHERE strftime('%Y', timestamp) = ? AND strftime('%m', timestamp) = ?
+    """
+        val cursorTransactions = readableDatabase.rawQuery(queryTransactions, arrayOf(year.toString(), monthString))
+        cursorTransactions.use { cursor ->
+            while (cursor.moveToNext()) {
+                val transactionId = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
+                val transactionType = cursor.getString(cursor.getColumnIndexOrThrow("type"))
+                val transactionAmount = cursor.getInt(cursor.getColumnIndexOrThrow("amount"))
+                val transactionCategory = cursor.getString(cursor.getColumnIndexOrThrow("category"))
+                val transactionTimestamp = cursor.getString(cursor.getColumnIndexOrThrow("timestamp"))
+                val transaction = Transaction(
+                    id = transactionId,
+                    type = transactionType,
+                    amount = transactionAmount,
+                    category = transactionCategory,
+                    timestamp = transactionTimestamp,
+                    isNew = false
+                )
+                transactions.add(transaction)
+            }
+        }
+        return transactions
+    }
+    fun updateTransaction(transaction: Transaction) {
+        val contentValues = ContentValues().apply {
+            put("type", transaction.type)
+            put("amount", transaction.amount)
+            put("category", transaction.category)
+            put("timestamp", SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date()))
+        }
+        if (transaction.isNew) {
+            writableDatabase.insert("Transactions", null, contentValues)
+        } else {
+            writableDatabase.update(
+                "Transactions",
+                contentValues,
+                "id = ?",
+                arrayOf(transaction.id.toString())
+            )
+        }
+    }
+    fun deleteTransaction(transactionId: Int) {
+        writableDatabase.delete(
+            "Transactions",
+            "id = ?",
+            arrayOf(transactionId.toString())
+        )
     }
 
     fun getBalance(): Balance {
@@ -203,7 +282,7 @@ class QuestLogDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         val cursor = readableDatabase.rawQuery(query, null)
 
         cursor.use {
-            if (it.moveToFirst()) { // Ensure there is at least one row
+            if (it.moveToFirst()) {
                 val id = it.getInt(it.getColumnIndexOrThrow("id"))
                 val currentBalance = it.getInt(it.getColumnIndexOrThrow("current_balance"))
                 val borrowedBalance = it.getInt(it.getColumnIndexOrThrow("borrowed_balance"))

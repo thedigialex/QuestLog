@@ -8,44 +8,51 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ListView
-import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.TextView
 import com.thedigialex.questlog.R
 import com.thedigialex.questlog.adapters.CategoryAdapter
+import com.thedigialex.questlog.adapters.TransactionAdapter
 import com.thedigialex.questlog.controllers.UserController
-import com.thedigialex.questlog.models.Balance
-import com.thedigialex.questlog.models.Category
-import com.thedigialex.questlog.models.Task
+import com.thedigialex.questlog.models.*
+import java.util.Calendar
 
 class TransactionListFragment(private val userController: UserController) : Fragment() {
 
     private lateinit var transactionListView: ListView
     private lateinit var categoryListView: ListView
+    private lateinit var editCategorySection: View
     private lateinit var transactionSection: View
     private lateinit var edtCurrentBalance: EditText
     private lateinit var tvExpense: TextView
     private lateinit var tvIncome: TextView
     private lateinit var tvBalance: TextView
 
-    private lateinit var newTaskButton: Button
+    private lateinit var btnShowEdit: Button
     private lateinit var btnEditClose: Button
     private lateinit var btnSettingSave: Button
     private lateinit var btnOpenSettings: Button
-    private lateinit var btnSaveSetting: Button
+    private lateinit var btnAddCategory: Button
     private lateinit var editSection: View
     private lateinit var settingSection: View
-    private lateinit var taskDescriptionInput: EditText
-    private lateinit var taskTypeSpinner: Spinner
-    private lateinit var taskRepeatInput: CheckBox
-    private lateinit var saveTaskButton: Button
-    private lateinit var deleteTaskButton: Button
+    private lateinit var edtCategoryName: EditText
+    private lateinit var edtCategoryTargetAmount: EditText
+    private lateinit var edtTransactionAmount: EditText
+    private lateinit var spinnerTransactionType: Spinner
+    private lateinit var spinnerCategory: Spinner
+    private lateinit var spinnerCategoryType: Spinner
+    private lateinit var btnDeleteCategory: Button
+    private lateinit var btnSaveCategory: Button
+    private lateinit var btnSaveTransaction: Button
+    private lateinit var btnDeleteTransaction: Button
 
-    private val taskTypes = listOf("Daily", "Weekly", "Monthly")
+    private val categoryTypes = listOf("Income", "Expense", "Borrow")
 
     private lateinit var incomeCategory: List<Category>
     private lateinit var expensesCategory: List<Category>
+
+    private lateinit var monthBasedTransaction: List<Transaction>
     private lateinit var balance: Balance
 
     override fun onCreateView(
@@ -61,45 +68,32 @@ class TransactionListFragment(private val userController: UserController) : Frag
         categoryListView = view.findViewById(R.id.categoryListView)
         edtCurrentBalance = view.findViewById(R.id.edtCurrentBalance)
         transactionSection = view.findViewById(R.id.transactionSection)
-        newTaskButton = view.findViewById(R.id.btnShowEdit)
+        editCategorySection = view.findViewById(R.id.editCategorySection)
+        btnShowEdit = view.findViewById(R.id.btnShowEdit)
         btnEditClose = view.findViewById(R.id.btnEditClose)
         btnSettingSave = view.findViewById(R.id.btnSettingSave)
         editSection = view.findViewById(R.id.editSection)
         settingSection = view.findViewById(R.id.settingSection)
         btnOpenSettings = view.findViewById(R.id.btnOpenSettings)
-        btnSaveSetting = view.findViewById(R.id.btnSaveSetting)
-        taskDescriptionInput = view.findViewById(R.id.edtTaskDescription)
-        taskTypeSpinner = view.findViewById(R.id.spinnerTaskType)
-        taskRepeatInput = view.findViewById(R.id.repeatBox)
-        saveTaskButton = view.findViewById(R.id.btnSaveTask)
-        deleteTaskButton = view.findViewById(R.id.btnDeleteTask)
-
-        val adapter = ArrayAdapter(
-            requireContext(),
-            android.R.layout.simple_spinner_item,
-            taskTypes
-        )
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        taskTypeSpinner.adapter = adapter
-
-        getCategories()
-        tvExpense.text = "0"
-        tvIncome.text = "0"
-        tvBalance.text = balance.current_balance.toString()
-
-        newTaskButton.setOnClickListener { switchVisibilityOfEdit(Task(isNew = true)) }
-        btnEditClose.setOnClickListener { switchVisibilityOfEdit(Task(isNew = true)) }
+        btnAddCategory = view.findViewById(R.id.btnAddCategory)
+        edtTransactionAmount = view.findViewById(R.id.edtTransactionAmount)
+        spinnerCategory = view.findViewById(R.id.spinnerCategory)
+        spinnerTransactionType = view.findViewById(R.id.spinnerTransactionType)
+        spinnerCategoryType = view.findViewById(R.id.spinnerCategoryType)
+        edtCategoryName = view.findViewById(R.id.edtCategoryName)
+        edtCategoryTargetAmount = view.findViewById(R.id.edtCategoryTargetAmount)
+        btnSaveCategory = view.findViewById(R.id.btnSaveCategory)
+        btnDeleteCategory = view.findViewById(R.id.btnDeleteCategory)
+        btnSaveTransaction = view.findViewById(R.id.btnSaveTransaction)
+        btnDeleteTransaction = view.findViewById(R.id.btnDeleteTransaction)
         btnOpenSettings.setOnClickListener { switchVisibilityOfSetting() }
-        btnSettingSave.setOnClickListener { saveCurrentBalance() }
-        //btnSaveSetting.setOnClickListener { addNewCategory(Category()) }
-
+        getTransactions()
         return view
     }
 
     private fun getCategories() {
         incomeCategory = userController.dbHelper.getBankCategory("Income")
         expensesCategory = userController.dbHelper.getBankCategory("Expense")
-        balance = userController.dbHelper.getBalance()
         val combinedCategories = mutableListOf<Category>().apply {
             addAll(incomeCategory)
             addAll(expensesCategory)
@@ -107,61 +101,111 @@ class TransactionListFragment(private val userController: UserController) : Frag
         if (combinedCategories.isEmpty()) {
             categoryListView.adapter = null
         } else {
-            val adapter = CategoryAdapter(requireContext(), combinedCategories) { selectedCategory -> addNewCategory(selectedCategory) }
+            val adapter = CategoryAdapter(requireContext(), combinedCategories) { selectedCategory -> switchVisibilityOfCategoryEdit(selectedCategory) }
             categoryListView.adapter = adapter
         }
     }
 
-    private fun switchVisibilityOfEdit(task: Task) {
-        val isSectionVisible = editSection.visibility == View.VISIBLE
-        editSection.visibility = if (isSectionVisible) View.GONE else View.VISIBLE
-        settingSection.visibility = View.GONE
-        transactionSection.visibility = if (isSectionVisible) View.VISIBLE else View.GONE
-        newTaskButton.visibility = if (isSectionVisible) View.VISIBLE else View.GONE
-        deleteTaskButton.visibility = View.GONE
-        if (editSection.visibility == View.VISIBLE) {
-            setUpEditView(task)
+    private fun getTransactions() {
+        balance = userController.dbHelper.getBalance()
+        tvBalance.text = balance.current_balance.toString()
+        val calendar = Calendar.getInstance()
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH) + 1
+        monthBasedTransaction = userController.dbHelper.getTransactions(year, month)
+        if (monthBasedTransaction.isEmpty()) {
+            transactionListView.adapter = null
+        } else {
+            val adapter = TransactionAdapter(requireContext(), monthBasedTransaction) { selectedTransaction -> switchVisibilityOfTransactionEdit(selectedTransaction) }
+            transactionListView.adapter = adapter
         }
-        if(!task.isNew) {
-            deleteTaskButton.visibility = View.VISIBLE
-            deleteTaskButton.setOnClickListener {
-                switchVisibilityOfEdit(task)
-                userController.dbHelper.deleteTaskAndLogs(task)
-            }
+        btnEditClose.setOnClickListener { switchVisibilityOfTransactionEdit(Transaction(isNew = true)) }
+        btnShowEdit.setOnClickListener { switchVisibilityOfTransactionEdit(Transaction(isNew = true)) }
+    }
+
+    private fun switchVisibilityOfTransactionEdit(transaction: Transaction) {
+       val adapter = ArrayAdapter(
+           requireContext(),
+           android.R.layout.simple_spinner_item,
+           categoryTypes
+       )
+       adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerTransactionType.adapter = adapter
+        spinnerCategory.adapter = adapter
+       val isSectionVisible = editSection.visibility == View.VISIBLE
+       editSection.visibility = if (isSectionVisible) View.GONE else View.VISIBLE
+       transactionSection.visibility = if (isSectionVisible) View.VISIBLE else View.GONE
+
+
+        btnDeleteTransaction.visibility = if (transaction.isNew) View.GONE else View.VISIBLE
+        edtTransactionAmount.setText(transaction.amount.toString())
+
+        val position = categoryTypes.indexOf(transaction.type)
+        if (position >= 0) {
+            spinnerTransactionType.setSelection(position)
+        }
+        if (position >= 0) {
+            spinnerCategory.setSelection(position)
+        }
+        btnSaveTransaction.setOnClickListener {
+            transaction.amount = edtTransactionAmount.text.toString().toIntOrNull() ?: 0
+            transaction.type = categoryTypes[spinnerTransactionType.selectedItemPosition]
+            transaction.category = categoryTypes[spinnerCategory.selectedItemPosition]
+            userController.dbHelper.updateTransaction(transaction)
+            getTransactions()
+            switchVisibilityOfTransactionEdit(Transaction(isNew = true))
+        }
+        btnDeleteTransaction.setOnClickListener {
+            userController.dbHelper.deleteTransaction(transaction.id)
+            getTransactions()
+            switchVisibilityOfTransactionEdit(Transaction(isNew = true))
         }
     }
 
     private fun switchVisibilityOfSetting() {
+        getCategories()
         val isSectionVisible = settingSection.visibility == View.VISIBLE
         btnOpenSettings.setBackgroundResource(
-            if (isSectionVisible) R.drawable.select_button else R.drawable.close_button
+            if (isSectionVisible) R.drawable.menu_button else R.drawable.close_button
         )
         edtCurrentBalance.setText(balance.current_balance.toString())
-
+        editCategorySection.visibility = View.GONE
         settingSection.visibility = if (isSectionVisible) View.GONE else View.VISIBLE
         editSection.visibility = View.GONE
         transactionSection.visibility = if (isSectionVisible) View.VISIBLE else View.GONE
-        newTaskButton.visibility = if (isSectionVisible) View.VISIBLE else View.GONE
-        deleteTaskButton.visibility = View.GONE
+
+        btnAddCategory.setOnClickListener { switchVisibilityOfCategoryEdit(Category(isNew = true)) }
+        btnSettingSave.setOnClickListener { saveCurrentBalance() }
     }
 
-    private fun setUpEditView(task: Task) {
-        taskDescriptionInput.setText(task.description)
-        val index = taskTypes.indexOf(task.type)
-        if (index != -1) {
-            taskTypeSpinner.setSelection(index)
+    private fun switchVisibilityOfCategoryEdit(category: Category) {
+        val adapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_item,
+            categoryTypes
+        )
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerCategoryType.adapter = adapter
+        val isSectionVisible = editCategorySection.visibility == View.VISIBLE
+        editCategorySection.visibility = if (isSectionVisible) View.GONE else View.VISIBLE
+        settingSection.visibility = View.GONE
+        btnDeleteCategory.visibility = if (category.isNew) View.GONE else View.VISIBLE
+        edtCategoryTargetAmount.setText(category.target_amount.toString())
+        edtCategoryName.setText(category.name)
+        val position = categoryTypes.indexOf(category.type)
+        if (position >= 0) {
+            spinnerCategoryType.setSelection(position)
         }
-        taskRepeatInput.isChecked = (task.repeat == 1)
-
-        saveTaskButton.setOnClickListener {
-            task.description = taskDescriptionInput.text.toString()
-            task.type = taskTypeSpinner.selectedItem.toString()
-            task.repeat = if (taskRepeatInput.isChecked) 1 else 0
-
-            if (task.description.isNotEmpty()) {
-                userController.dbHelper.saveTask(task, task.isNew)
-                switchVisibilityOfEdit(task)
-            }
+        btnSaveCategory.setOnClickListener {
+            category.name = edtCategoryName.text.toString()
+            category.target_amount = edtCategoryTargetAmount.text.toString().toIntOrNull() ?: 0
+            category.type = categoryTypes[spinnerCategoryType.selectedItemPosition]
+            userController.dbHelper.updateCategory(category)
+            switchVisibilityOfSetting()
+        }
+        btnDeleteCategory.setOnClickListener {
+            userController.dbHelper.deleteCategory(category.id)
+            switchVisibilityOfSetting()
         }
     }
 
@@ -170,9 +214,5 @@ class TransactionListFragment(private val userController: UserController) : Frag
         val currentBalance = currentBalanceText.toIntOrNull() ?: 0
         balance.current_balance = currentBalance
         userController.dbHelper.updateBalance(balance)
-    }
-
-    private fun addNewCategory(category: Category) {
-
     }
 }

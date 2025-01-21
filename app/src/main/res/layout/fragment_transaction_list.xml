@@ -20,7 +20,7 @@
             android:id="@+id/btnOpenSettings"
             android:layout_width="64dp"
             android:layout_height="match_parent"
-            android:background="@drawable/select_button" />
+            android:background="@drawable/menu_button" />
 
         <TextView
             android:id="@+id/tvBank"
@@ -43,11 +43,13 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:orientation="vertical">
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="visible">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="64dp"
             android:orientation="horizontal">
 
             <TextView
@@ -61,15 +63,32 @@
                 android:textColor="@color/green"
                 android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/tvBalance"
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="2"
-                android:text="TextView"
-                android:gravity="center"
-                style="@style/SubText"
-                android:textStyle="bold"/>
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvBalance"
+                    style="@style/SubText"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="TextView"
+                    android:textColor="@color/black"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvBorrow"
+                    style="@style/SubText"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="TextView" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/tvExpense"
@@ -81,16 +100,8 @@
                 android:text="TextView"
                 android:textColor="@color/red"
                 android:textStyle="bold" />
-        </LinearLayout>
 
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="match_parent"
-            android:layout_height="32dp"
-            android:text="Recent Transactions"
-            android:gravity="center"
-            style="@style/SubText"
-            android:textStyle="bold" />
+        </LinearLayout>
 
         <ListView
             android:id="@+id/transactionListView"
@@ -102,14 +113,15 @@
             tools:visibility="visible">
 
         </ListView>
-    </LinearLayout>
 
-    <Button
-        android:id="@+id/btnShowEdit"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:layout_margin="8dp"
-        android:background="@drawable/selection_button" />
+        <Button
+            android:id="@+id/btnShowEdit"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/selection_button" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/editSection"
@@ -126,11 +138,11 @@
             android:orientation="horizontal">
 
             <EditText
-                android:id="@+id/edtTaskDescription"
+                android:id="@+id/edtTransactionAmount"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:hint="Quest Description"
+                android:hint="Amount"
                 android:padding="16dp" />
 
             <Button
@@ -146,18 +158,18 @@
             android:orientation="horizontal">
 
             <Spinner
-                android:id="@+id/spinnerTaskType"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="3"
-                android:padding="16dp" />
-
-            <CheckBox
-                android:id="@+id/repeatBox"
+                android:id="@+id/spinnerTransactionType"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="Repeat" />
+                android:padding="16dp" />
+
+            <Spinner
+                android:id="@+id/spinnerCategory"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="16dp" />
 
         </LinearLayout>
 
@@ -174,7 +186,7 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/btnDeleteTask"
+                android:id="@+id/btnDeleteTransaction"
                 android:layout_width="32dp"
                 android:layout_height="match_parent"
                 android:background="@drawable/delete_button"
@@ -182,9 +194,9 @@
         </LinearLayout>
 
         <Button
-            android:id="@+id/btnSaveTask"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:id="@+id/btnSaveTransaction"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
             android:layout_margin="8dp"
             android:background="@drawable/save_button" />
     </LinearLayout>
@@ -200,22 +212,39 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="64dp"
+            android:layout_height="86dp"
+            android:gravity="center"
             android:orientation="horizontal">
 
-            <EditText
-                android:id="@+id/edtCurrentBalance"
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:hint="Bank Balance"
-                android:padding="16dp"
-                android:inputType="number"/>
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textView2"
+                    style="@style/SubText"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="Current Balance:" />
+
+                <EditText
+                    android:id="@+id/edtCurrentBalance"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="2"
+                    android:hint="Bank Balance"
+                    android:inputType="number"
+                    android:padding="16dp" />
+            </LinearLayout>
 
             <Button
                 android:id="@+id/btnSettingSave"
                 android:layout_width="64dp"
-                android:layout_height="match_parent"
+                android:layout_height="64dp"
                 android:background="@drawable/save_button" />
         </LinearLayout>
 
@@ -229,10 +258,89 @@
             tools:visibility="visible" />
 
         <Button
-            android:id="@+id/btnSaveSetting"
+            android:id="@+id/btnAddCategory"
             android:layout_width="64dp"
             android:layout_height="64dp"
-            android:layout_margin="8dp"
+            android:layout_marginBottom="8dp"
             android:background="@drawable/selection_button" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/editCategorySection"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/edtCategoryName"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="4"
+                android:hint="Category Name"
+                android:padding="16dp" />
+
+            <Spinner
+                android:id="@+id/spinnerCategoryType"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:padding="16dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/edtCategoryTargetAmount"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="4"
+                android:hint="Category Target Amount" />
+
+            <TextView
+                android:id="@+id/tvSpacer"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/textViewCategoryPlaceHolder"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:gravity="end"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnDeleteCategory"
+                android:layout_width="32dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/delete_button"
+                android:visibility="visible" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnSaveCategory"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/save_button" />
     </LinearLayout>
 </LinearLayout>

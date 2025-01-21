@@ -15,7 +15,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/tvCategoryName"
+            android:id="@+id/tvTransactionAmount"
             style="@style/Text"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -23,7 +23,7 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/tvCategoryDetails"
+            android:id="@+id/tvTransactionDetails"
             style="@style/SubText"
             android:layout_width="match_parent"
             android:layout_height="0dp"

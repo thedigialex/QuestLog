@@ -1,9 +1,10 @@
 package com.thedigialex.questlog.models
 
-data class Category(
+data class Transaction(
     var id: Int = 0,
     var type: String = "Income",
-    var name: String = "New Category",
-    var target_amount: Int = 0,
+    var amount: Int = 0,
+    var category: String = "",
+    var timestamp: String = "",
     var isNew: Boolean = false
 )
