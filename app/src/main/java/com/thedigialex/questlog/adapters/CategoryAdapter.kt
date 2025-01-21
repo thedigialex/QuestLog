@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import com.thedigialex.questlog.R
 import com.thedigialex.questlog.models.Category
 
@@ -26,8 +27,19 @@ class CategoryAdapter(
         val category = getItem(position)
         val tvCategoryName = view.findViewById<TextView>(R.id.tvCategoryName)
         val tvCategoryDetails = view.findViewById<TextView>(R.id.tvCategoryDetails)
+        when (category.type) {
+            "Income" -> {
+                tvCategoryName.setTextColor(ContextCompat.getColor(context, R.color.green))
+            }
+            "Expense" -> {
+                tvCategoryName.setTextColor(ContextCompat.getColor(context, R.color.red))
+            }
+            "Borrow" -> {
+                tvCategoryName.setTextColor(ContextCompat.getColor(context, R.color.accent))
+            }
+        }
         tvCategoryName.text = category.name
-        tvCategoryDetails.text = "Type: " + category.type + " Target Amount: " + category.target_amount
+        tvCategoryDetails.text = "Target Amount: " + category.target_amount
         view.setOnClickListener {
             onTaskClick(category)
         }

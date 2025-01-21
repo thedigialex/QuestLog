@@ -100,6 +100,7 @@ class QuestLogDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             type TEXT NOT NULL CHECK(type IN ('Income', 'Expense', 'Borrow')),
             name TEXT NOT NULL,
+            details TEXT,
             target_amount INTEGER NOT NULL DEFAULT 0
         );
         """
@@ -134,16 +135,9 @@ class QuestLogDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
             put("current_balance", 0)
             put("borrowed_balance", 0)
         }
-        val defaultCategories = ContentValues().apply {
-            put("type", "Income")
-            put("name", "Salary")
-            put("target_amount", 0)
-        }
-
         if (currentUser.id == 0) {
             writableDatabase.insert("Users", null, values)
             writableDatabase.insert("Balance", null, balanceValues)
-            writableDatabase.insert("Categories", null, defaultCategories)
             return true
         } else {
             writableDatabase.update("Users", values, "id = ?", arrayOf(currentUser.id.toString()))
@@ -184,12 +178,14 @@ class QuestLogDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
                 val categoryId = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
                 val categoryType = cursor.getString(cursor.getColumnIndexOrThrow("type"))
                 val categoryName = cursor.getString(cursor.getColumnIndexOrThrow("name"))
+                val categoryDetails = cursor.getString(cursor.getColumnIndexOrThrow("details"))
                 val targetAmount = cursor.getInt(cursor.getColumnIndexOrThrow("target_amount"))
 
                 val category = Category(
                     id = categoryId,
                     type = categoryType,
                     name = categoryName,
+                    details = categoryDetails,
                     target_amount = targetAmount,
                     isNew = false
                 )
@@ -202,6 +198,7 @@ class QuestLogDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         val contentValues = ContentValues().apply {
             put("type", category.type)
             put("name", category.name)
+            put("details", category.details)
             put("target_amount", category.target_amount)
         }
         if (category.isNew) {

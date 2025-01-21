@@ -7,11 +7,17 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.thedigialex.questlog.R
 import com.thedigialex.questlog.models.TaskLog
+import com.thedigialex.questlog.models.Transaction
 
 class CalendarAdapter(private val days: List<DayItem>, private val onDayClick: (DayItem) -> Unit) :
     RecyclerView.Adapter<CalendarAdapter.DayViewHolder>() {
 
-    data class DayItem(val day: Int?, val taskLogs: List<TaskLog>, val isToday: Boolean)
+    data class DayItem(
+        val day: Int?,
+        val taskLogs: List<TaskLog>,
+        val transactions: List<Transaction>,
+        val isToday: Boolean
+    )
 
     class DayViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val dayTextView: TextView = itemView.findViewById(R.id.dayTextView)
@@ -29,7 +35,7 @@ class CalendarAdapter(private val days: List<DayItem>, private val onDayClick: (
 
         if (dayItem.day != null) {
             holder.dayTextView.text = dayItem.day.toString()
-            holder.taskCountTextView.text = "${dayItem.taskLogs.size}"
+            holder.taskCountTextView.text = "${dayItem.taskLogs.size + dayItem.transactions.size}"
             holder.itemView.visibility = View.VISIBLE
             holder.itemView.setOnClickListener {
                 onDayClick(dayItem)

@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import com.thedigialex.questlog.R
 import com.thedigialex.questlog.models.Transaction
 
@@ -27,7 +28,24 @@ class TransactionAdapter(
         val tvTransactionAmount = view.findViewById<TextView>(R.id.tvTransactionAmount)
         val tvTransactionDetails = view.findViewById<TextView>(R.id.tvTransactionDetails)
         tvTransactionAmount.text = transaction.amount.toString()
-        tvTransactionDetails.text = "Type: " + transaction.type
+        when (transaction.type) {
+            "Income" -> {
+                tvTransactionAmount.setTextColor(ContextCompat.getColor(context, R.color.green))
+                tvTransactionAmount.text = "+ ${transaction.amount}"
+            }
+            "Expense" -> {
+                tvTransactionAmount.setTextColor(ContextCompat.getColor(context, R.color.red))
+                tvTransactionAmount.text = "- ${transaction.amount}"
+            }
+            "Borrow" -> {
+                tvTransactionAmount.setTextColor(ContextCompat.getColor(context, R.color.accent))
+                tvTransactionAmount.text = "  ${transaction.amount}"
+            }
+            else -> {
+                tvTransactionAmount.text = transaction.amount.toString()
+            }
+        }
+        tvTransactionDetails.text = transaction.category
         view.setOnClickListener {
             onClick(transaction)
         }

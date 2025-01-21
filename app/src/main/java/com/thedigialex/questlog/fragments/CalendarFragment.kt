@@ -53,7 +53,10 @@ class CalendarFragment(private val userController: UserController) : Fragment() 
         monthTextView.text = SimpleDateFormat("MMMM\nyyyy", Locale.getDefault()).format(calendar.time)
 
         val taskLogs = userController.dbHelper.getTaskLogsForMonth(month + 1, year)
-        val groupedLogs = taskLogs.groupBy { it.loggedDate }
+        val groupedTaskLogs = taskLogs.groupBy { it.loggedDate }
+
+        val transactions = userController.dbHelper.getTransactions(year, month + 1)
+        val groupedTransactions = transactions.groupBy { it.timestamp.split("T")[0] } // Assuming `timestamp` is in ISO 8601 format
 
         val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
         val days = mutableListOf<CalendarAdapter.DayItem>()
@@ -64,13 +67,20 @@ class CalendarFragment(private val userController: UserController) : Fragment() 
         val todayYear = today.get(Calendar.YEAR)
 
         repeat(firstDayOfWeek) {
-            days.add(CalendarAdapter.DayItem(null, emptyList(), false))
+            days.add(CalendarAdapter.DayItem(null, emptyList(), emptyList(), false))
         }
 
         for (day in 1..daysInMonth) {
             val date = String.format("%04d-%02d-%02d", year, month + 1, day)
             val isToday = day == todayDay && month == todayMonth && year == todayYear
-            days.add(CalendarAdapter.DayItem(day, groupedLogs[date] ?: emptyList(), isToday))
+            days.add(
+                CalendarAdapter.DayItem(
+                    day,
+                    groupedTaskLogs[date] ?: emptyList(),
+                    groupedTransactions[date] ?: emptyList(),
+                    isToday
+                )
+            )
         }
 
         calendarRecyclerView.layoutManager = GridLayoutManager(requireContext(), 7)
@@ -79,11 +89,13 @@ class CalendarFragment(private val userController: UserController) : Fragment() 
         }
     }
 
+
     private fun openDayDetails(dayItem: CalendarAdapter.DayItem) {
         calendarRecyclerView.visibility = View.GONE
         dayDetailLayout.visibility = View.VISIBLE
         val tvDayTitle = dayDetailLayout.findViewById<TextView>(R.id.tvDayTitle)
         val tvDayContent = dayDetailLayout.findViewById<TextView>(R.id.tvDayContent)
+
         if (dayItem.day != null) {
             tvDayTitle.text = "Day ${dayItem.day}"
 
@@ -95,14 +107,28 @@ class CalendarFragment(private val userController: UserController) : Fragment() 
                         2 -> "[O]"
                         else -> "[?]"
                     }} ${taskLog.taskName}"
-
                 }
             } else {
                 "No tasks for this day."
             }
-            tvDayContent.text = taskDescriptions
+
+            val transactionDescriptions = if (dayItem.transactions.isNotEmpty()) {
+                dayItem.transactions.joinToString(separator = "\n") { transaction ->
+                    "${when (transaction.type) {
+                        "Income" -> "+"
+                        "Expense" -> "-"
+                        "Borrow" -> ""
+                        else -> "[?]"
+                    }} ${transaction.amount} (${transaction.category})"
+                }
+            } else {
+                "No transactions for this day."
+            }
+
+            tvDayContent.text = taskDescriptions + "\n\n" + transactionDescriptions
         }
     }
+
 
     private fun changeMonth(offset: Int) {
         calendar.add(Calendar.MONTH, offset)

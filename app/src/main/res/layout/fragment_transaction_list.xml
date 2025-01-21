@@ -63,32 +63,14 @@
                 android:textColor="@color/green"
                 android:textStyle="bold" />
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/tvBorrow"
+                style="@style/SubText"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="2"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/tvBalance"
-                    style="@style/SubText"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="TextView"
-                    android:textColor="@color/black"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tvBorrow"
-                    style="@style/SubText"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="TextView" />
-            </LinearLayout>
+                android:gravity="center"
+                android:text="TextView" />
 
             <TextView
                 android:id="@+id/tvExpense"
@@ -281,17 +263,9 @@
 
             <EditText
                 android:id="@+id/edtCategoryName"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="4"
                 android:hint="Category Name"
-                android:padding="16dp" />
-
-            <Spinner
-                android:id="@+id/spinnerCategoryType"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="2"
                 android:padding="16dp" />
 
         </LinearLayout>
@@ -305,22 +279,28 @@
                 android:id="@+id/edtCategoryTargetAmount"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="4"
-                android:hint="Category Target Amount" />
+                android:layout_weight="1"
+                android:hint="Category Target Amount"
+                android:inputType="number" />
 
-            <TextView
-                android:id="@+id/tvSpacer"
+            <Spinner
+                android:id="@+id/spinnerCategoryType"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="2" />
+                android:layout_weight="1"
+                android:padding="16dp" />
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/textViewCategoryPlaceHolder"
+        <EditText
+            android:id="@+id/edtCategoryDetails"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:ems="10"
+            android:gravity="clip_horizontal"
+            android:inputType="textMultiLine"
+            android:text="Details" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -342,5 +322,6 @@
             android:layout_height="64dp"
             android:layout_marginBottom="8dp"
             android:background="@drawable/save_button" />
+
     </LinearLayout>
 </LinearLayout>
