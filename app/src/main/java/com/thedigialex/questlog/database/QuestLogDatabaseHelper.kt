@@ -220,7 +220,7 @@ class QuestLogDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         )
     }
 
-    fun getTransactions(year: Int, month: Int): List<Transaction> {
+    fun getTransactions( month: Int, year: Int): List<Transaction> {
         val transactions = mutableListOf<Transaction>()
         val monthString = month.toString().padStart(2, '0')
         val queryTransactions = """

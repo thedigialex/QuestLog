@@ -15,29 +15,27 @@ import com.thedigialex.questlog.models.Item
 class DashboardActivity : AppCompatActivity() {
 
     private lateinit var userController: UserController
+    private lateinit var btnPlayerSettings: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard)
         userController = UserController(this, findViewById<View?>(R.id.userLayout).findViewById(R.id.userLayout), findViewById(R.id.headerLayout))
         userController.dbHelper.checkLogDateForRepeating()
-        findViewById<Button>(R.id.btnPlayerSettings).setOnClickListener { switchVisibilityOfPlayerSettings() }
+        btnPlayerSettings = findViewById(R.id.btnPlayerSettings)
+        btnPlayerSettings.setOnClickListener { switchVisibilityOfPlayerSettings() }
         createNewItems()
-    }
-
-    override fun onResume() {
-        super.onResume()
         val viewPager: ViewPager2 = findViewById(R.id.viewPager)
         val tabLayout: TabLayout = findViewById(R.id.tabLayout)
         val adapter = DashboardPagerAdapter(this, userController)
         viewPager.adapter = adapter
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             when (position) {
-                0 -> tab.text = "Quest"
-                1 -> tab.text = "Bank"
-                2 -> tab.text = "Calendar"
-                3 -> tab.text = "Shop"
-                4 -> tab.text = "Notes"
+                0 -> tab.setIcon(R.drawable.ic_quest)
+                1 -> tab.setIcon(R.drawable.ic_bank)
+                2 -> tab.setIcon(R.drawable.ic_calendar)
+                3 -> tab.setIcon(R.drawable.ic_store)
+                4 -> tab.setIcon(R.drawable.ic_notes)
             }
         }.attach()
     }
@@ -46,9 +44,11 @@ class DashboardActivity : AppCompatActivity() {
         val playerSettingsMenu = findViewById<View>(R.id.userLayout)
         if (playerSettingsMenu.visibility == View.VISIBLE) {
             playerSettingsMenu.visibility = View.GONE
+            btnPlayerSettings.setBackgroundResource(R.drawable.menu_button)
         } else {
             userController.setUpLayoutValues()
             playerSettingsMenu.visibility = View.VISIBLE
+            btnPlayerSettings.setBackgroundResource(R.drawable.close_button)
         }
     }
 

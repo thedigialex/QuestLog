@@ -1,5 +1,6 @@
 package com.thedigialex.questlog.fragments
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -19,6 +20,7 @@ import com.thedigialex.questlog.controllers.UserController
 import com.thedigialex.questlog.models.*
 import java.util.Calendar
 
+@SuppressLint("SetTextI18n")
 class TransactionListFragment(private val userController: UserController) : Fragment() {
 
     private lateinit var transactionListView: ListView
@@ -119,7 +121,7 @@ class TransactionListFragment(private val userController: UserController) : Frag
         val calendar = Calendar.getInstance()
         val year = calendar.get(Calendar.YEAR)
         val month = calendar.get(Calendar.MONTH) + 1
-        monthBasedTransaction = userController.dbHelper.getTransactions(year, month)
+        monthBasedTransaction = userController.dbHelper.getTransactions(month, year)
         if (monthBasedTransaction.isEmpty()) {
             transactionListView.adapter = null
         } else {
@@ -130,8 +132,8 @@ class TransactionListFragment(private val userController: UserController) : Frag
             val adapter = TransactionAdapter(requireContext(), monthBasedTransaction) { selectedTransaction -> switchVisibilityOfTransactionEdit(selectedTransaction) }
             transactionListView.adapter = adapter
         }
-        tvIncome.text = "Income\n" + incomeTotal.toString()
-        tvExpense.text = "Expense\n" + expenseTotal.toString()
+        tvIncome.text = "Income\n$incomeTotal"
+        tvExpense.text = "Expense\n$expenseTotal"
         btnEditClose.setOnClickListener { switchVisibilityOfTransactionEdit(Transaction(isNew = true)) }
         btnShowEdit.setOnClickListener { switchVisibilityOfTransactionEdit(Transaction(isNew = true)) }
     }
@@ -139,7 +141,7 @@ class TransactionListFragment(private val userController: UserController) : Frag
     private fun switchVisibilityOfTransactionEdit(transaction: Transaction) {
         getTransactions()
         val incomeCategories = mutableListOf("Salary")
-        val expenseCategories = mutableListOf("Borrow Payment") //ToDo if remove this from the borrowed list
+        val expenseCategories = mutableListOf("Borrow Payment", "Borrow")
         incomeCategory.forEach { category ->
             incomeCategories.add(category.name)
         }
@@ -148,8 +150,8 @@ class TransactionListFragment(private val userController: UserController) : Frag
         }
         val transactionTypeCategories = mapOf(
             "Income" to incomeCategories,
-            "Expense" to expenseCategories,
-            "Borrow" to expenseCategories
+            "Expense" to expenseCategories.filter { it != "Borrow" },
+            "Borrow" to expenseCategories.filter { it != "Borrow Payment" }
         )
         val transactionTypeAdapter = ArrayAdapter(
             requireContext(),
@@ -172,35 +174,40 @@ class TransactionListFragment(private val userController: UserController) : Frag
                 categoryAdapter.clear()
                 categoryAdapter.addAll(categories)
                 categoryAdapter.notifyDataSetChanged()
+                if (selectedType == "Income" && incomeCategories.contains(transaction.category)) {
+                    spinnerCategory.setSelection(incomeCategories.indexOf(transaction.category))
+                } else if (selectedType == "Expense" && expenseCategories.contains(transaction.category)) {
+                    spinnerCategory.setSelection(expenseCategories.indexOf(transaction.category))
+                } else if (selectedType == "Borrow" && expenseCategories.filter { it != "Borrow Payment" }.contains(transaction.category)) {
+                    spinnerCategory.setSelection(expenseCategories.filter { it != "Borrow Payment" }.indexOf(transaction.category))
+                }
             }
+
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
-
-        spinnerTransactionType.setSelection(categoryTypes.indexOf(transaction.type))
-        spinnerCategory.setSelection(0) //ToDo fix defaulting to the transaction value
+        spinnerTransactionType.setSelection(transactionTypeCategories.keys.indexOf(transaction.type))
 
        val isSectionVisible = editSection.visibility == View.VISIBLE
        editSection.visibility = if (isSectionVisible) View.GONE else View.VISIBLE
        transactionSection.visibility = if (isSectionVisible) View.VISIBLE else View.GONE
        btnDeleteTransaction.visibility = if (transaction.isNew) View.GONE else View.VISIBLE
        edtTransactionAmount.setText(transaction.amount.toString())
-
+       val oldAmount = transaction.amount
        btnSaveTransaction.setOnClickListener {
            transaction.amount = edtTransactionAmount.text.toString().toIntOrNull() ?: 0
            transaction.type = spinnerTransactionType.selectedItem.toString()
            transaction.category = spinnerCategory.selectedItem.toString()
            if(transaction.type == "Borrow") {
-               balance.borrowed_balance += transaction.amount
-
+               balance.borrowed_balance += (transaction.amount - oldAmount)
            }
            else {
                if(transaction.type == "Income") {
-                   balance.current_balance += transaction.amount
+                   balance.current_balance += (transaction.amount - oldAmount)
                }
                else {
-                   balance.current_balance -= transaction.amount
+                   balance.current_balance -= (transaction.amount - oldAmount)
                    if(transaction.category == "Borrow Payment") {
-                       balance.borrowed_balance -= transaction.amount
+                       balance.borrowed_balance -= (transaction.amount - oldAmount)
                    }
                }
            }
@@ -209,6 +216,21 @@ class TransactionListFragment(private val userController: UserController) : Frag
            switchVisibilityOfTransactionEdit(Transaction(isNew = true))
        }
        btnDeleteTransaction.setOnClickListener {
+           if(transaction.type == "Borrow") {
+               balance.borrowed_balance -= (transaction.amount)
+           }
+           else {
+               if(transaction.type == "Income") {
+                   balance.current_balance -= (transaction.amount)
+               }
+               else {
+                   balance.current_balance += (transaction.amount)
+                   if(transaction.category == "Borrow Payment") {
+                       balance.borrowed_balance += (transaction.amount)
+                   }
+               }
+           }
+           userController.dbHelper.updateBalance(balance)
            userController.dbHelper.deleteTransaction(transaction.id)
            switchVisibilityOfTransactionEdit(Transaction(isNew = true))
        }
@@ -234,7 +256,7 @@ class TransactionListFragment(private val userController: UserController) : Frag
         val adapter = ArrayAdapter(
             requireContext(),
             android.R.layout.simple_spinner_item,
-            categoryTypes
+            categoryTypes.filter { it != "Borrow" }
         )
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerCategoryType.adapter = adapter
@@ -267,6 +289,7 @@ class TransactionListFragment(private val userController: UserController) : Frag
         val currentBalanceText = edtCurrentBalance.text.toString()
         val currentBalance = currentBalanceText.toIntOrNull() ?: 0
         balance.current_balance = currentBalance
+        tvBank.text = balance.current_balance.toString()
         userController.dbHelper.updateBalance(balance)
     }
 }

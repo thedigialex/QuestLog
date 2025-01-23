@@ -1,6 +1,8 @@
 package com.thedigialex.questlog.fragments
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,15 +15,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.thedigialex.questlog.R
 import com.thedigialex.questlog.adapters.CalendarAdapter
 import com.thedigialex.questlog.controllers.UserController
+import com.thedigialex.questlog.models.Category
 import java.text.SimpleDateFormat
 import java.util.*
 
+@SuppressLint("SetTextI18n")
 class CalendarFragment(private val userController: UserController) : Fragment() {
-
     private lateinit var calendar: Calendar
     private lateinit var dayDetailLayout: LinearLayout
     private lateinit var calendarRecyclerView: RecyclerView
+    private lateinit var calendarLayoutContainer: LinearLayout
     private lateinit var monthTextView: TextView
+    private lateinit var tvCalendarTransactionList: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -30,7 +35,9 @@ class CalendarFragment(private val userController: UserController) : Fragment() 
         val view = inflater.inflate(R.layout.fragment_calendar, container, false)
         calendarRecyclerView = view.findViewById(R.id.calendarRecyclerView)
         monthTextView = view.findViewById(R.id.tvMonth)
+        tvCalendarTransactionList = view.findViewById(R.id.tvCalendarTransactionList)
         dayDetailLayout = view.findViewById(R.id.dayDetailLayout)
+        calendarLayoutContainer = view.findViewById(R.id.calendarLayoutContainer)
         calendar = Calendar.getInstance()
 
         view.findViewById<Button>(R.id.btnDecreaseMonth).setOnClickListener { changeMonth(-1) }
@@ -55,8 +62,56 @@ class CalendarFragment(private val userController: UserController) : Fragment() 
         val taskLogs = userController.dbHelper.getTaskLogsForMonth(month + 1, year)
         val groupedTaskLogs = taskLogs.groupBy { it.loggedDate }
 
-        val transactions = userController.dbHelper.getTransactions(year, month + 1)
-        val groupedTransactions = transactions.groupBy { it.timestamp.split("T")[0] } // Assuming `timestamp` is in ISO 8601 format
+        val transactions = userController.dbHelper.getTransactions(month + 1, year)
+        val groupedTransactions = transactions.groupBy { it.timestamp }
+
+        val incomeCategory = userController.dbHelper.getBankCategory("Income")
+        val expenseCategory = userController.dbHelper.getBankCategory("Expense").toMutableList()
+        expenseCategory.add(
+            Category(
+                id = 0,
+                type = "Expense",
+                name = "Borrow Payment",
+                details = "Place holder",
+                target_amount = 0,
+                isNew = false
+            )
+        )
+        val allCategories = incomeCategory + expenseCategory
+
+        val groupedByCategory = transactions.groupBy { transaction ->
+            when {
+                transaction.type == "Borrow" -> "Borrowed"
+                allCategories.find { category -> category.name == transaction.category } != null -> {
+                    allCategories.find { category -> category.name == transaction.category }?.name ?: "Uncategorized"
+                }
+                else -> "Uncategorized"
+            }
+        }
+        val totalAmountByCategory = groupedByCategory.mapValues { (categoryName, transactions) ->
+            val totalAmount = transactions.sumOf { it.amount }
+            val targetAmount = if (categoryName == "Borrowed") 0 else {
+                val category = allCategories.find { it.name == categoryName }
+                category?.target_amount ?: 0
+            }
+            Pair(totalAmount, targetAmount)
+        }
+        var transactionList = ""
+        totalAmountByCategory.forEach { (category, amounts) ->
+            if (category != "Uncategorized" && category != "Borrowed" && category != "Borrow Payment") {
+                val (totalAmount, targetAmount) = amounts
+                transactionList += "$category: $totalAmount / $targetAmount\n"
+            }
+            if (category == "Borrowed") {
+                val borrowPayments = transactions.filter { it.category == "Borrow Payment" }
+                val borrowPaymentTotal = borrowPayments.sumOf { it.amount }
+                val borrowedTransactions = groupedByCategory["Borrowed"] ?: emptyList()
+                val totalBorrowed = borrowedTransactions.sumOf { it.amount }
+                val netBorrowed = totalBorrowed - borrowPaymentTotal
+                transactionList += "Borrowed: +$totalBorrowed, -$borrowPaymentTotal\nNet Borrowed: $netBorrowed\n"
+            }
+        }
+        tvCalendarTransactionList.text = transactionList
 
         val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
         val days = mutableListOf<CalendarAdapter.DayItem>()
@@ -89,9 +144,8 @@ class CalendarFragment(private val userController: UserController) : Fragment() 
         }
     }
 
-
     private fun openDayDetails(dayItem: CalendarAdapter.DayItem) {
-        calendarRecyclerView.visibility = View.GONE
+        calendarLayoutContainer.visibility = View.GONE
         dayDetailLayout.visibility = View.VISIBLE
         val tvDayTitle = dayDetailLayout.findViewById<TextView>(R.id.tvDayTitle)
         val tvDayContent = dayDetailLayout.findViewById<TextView>(R.id.tvDayContent)
@@ -129,7 +183,6 @@ class CalendarFragment(private val userController: UserController) : Fragment() 
         }
     }
 
-
     private fun changeMonth(offset: Int) {
         calendar.add(Calendar.MONTH, offset)
         updateCalendar()
@@ -137,6 +190,6 @@ class CalendarFragment(private val userController: UserController) : Fragment() 
 
     private fun closeDayDetails(){
         dayDetailLayout.visibility = View.GONE
-        calendarRecyclerView.visibility = View.VISIBLE
+        calendarLayoutContainer.visibility = View.VISIBLE
     }
 }

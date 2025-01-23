@@ -19,7 +19,7 @@
             android:id="@+id/imageLayout"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
             android:layout_weight="2"
             android:gravity="center"
             android:orientation="vertical"
@@ -28,17 +28,14 @@
             <ImageView
                 android:id="@+id/imageView"
                 android:layout_width="64dp"
-                android:layout_height="0dp"
-                android:layout_marginBottom="8dp"
-                android:layout_weight="1"
+                android:layout_height="64dp"
                 app:srcCompat="@drawable/ic_launcher_foreground" />
 
             <Spinner
                 android:id="@+id/spinnerAvatar"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="64dp"
                 android:layout_marginBottom="8dp"
-                android:layout_weight="1"
                 android:background="@drawable/dropdown"
                 android:hint="Select Avatar" />
         </LinearLayout>
@@ -47,6 +44,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
             android:layout_weight="4"
             android:orientation="vertical">
 
@@ -61,9 +59,8 @@
 
                 <Spinner
                     android:id="@+id/spinnerTitle"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="64dp"
                     android:background="@drawable/dropdown"
                     android:hint="Select Avatar" />
 
@@ -80,9 +77,8 @@
                 android:id="@+id/editUsername"
                 style="@style/Text"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="64dp"
                 android:layout_marginBottom="8dp"
-                android:layout_weight="1"
                 android:background="@drawable/input_box"
                 android:hint="Edit Username"
                 android:inputType="text"

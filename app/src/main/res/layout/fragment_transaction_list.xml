@@ -34,8 +34,8 @@
             android:id="@+id/btnIncreaseMonth"
             android:layout_width="64dp"
             android:layout_height="match_parent"
-            android:background="@drawable/select_button"
-            android:rotationY="180" />
+            android:rotationY="180"
+            android:visibility="invisible" />
     </LinearLayout>
 
     <LinearLayout
@@ -125,6 +125,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:hint="Amount"
+                android:inputType="number"
                 android:padding="16dp" />
 
             <Button
@@ -230,6 +231,15 @@
                 android:background="@drawable/save_button" />
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/textView3"
+            style="@style/SubText"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:gravity="center"
+            android:text="Custom Categories"
+            android:textStyle="bold" />
+
         <ListView
             android:id="@+id/categoryListView"
             android:layout_width="match_parent"
@@ -291,6 +301,14 @@
                 android:padding="16dp" />
 
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/textView4"
+            style="@style/SubText"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:gravity="center_vertical"
+            android:text="Category Details" />
 
         <EditText
             android:id="@+id/edtCategoryDetails"
