@@ -108,7 +108,7 @@ class CalendarFragment(private val userController: UserController) : Fragment() 
                 val borrowedTransactions = groupedByCategory["Borrowed"] ?: emptyList()
                 val totalBorrowed = borrowedTransactions.sumOf { it.amount }
                 val netBorrowed = totalBorrowed - borrowPaymentTotal
-                transactionList += "Borrowed: +$totalBorrowed, -$borrowPaymentTotal\nNet Borrowed: $netBorrowed\n"
+                transactionList += "Net Borrowed: $netBorrowed\n"
             }
         }
         tvCalendarTransactionList.text = transactionList

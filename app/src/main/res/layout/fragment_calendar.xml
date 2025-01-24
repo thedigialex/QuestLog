@@ -1,11 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingStart="16dp"
-    android:paddingTop="0dp"
-    android:paddingEnd="16dp"
-    android:paddingBottom="4dp">
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,6 +14,7 @@
             android:id="@+id/btnDecreaseMonth"
             android:layout_width="64dp"
             android:layout_height="match_parent"
+            android:layout_margin="4dp"
             android:background="@drawable/select_button" />
 
         <TextView
@@ -31,6 +28,7 @@
             android:id="@+id/btnIncreaseMonth"
             android:layout_width="64dp"
             android:layout_height="match_parent"
+            android:layout_margin="4dp"
             android:background="@drawable/select_button"
             android:rotationY="180" />
     </LinearLayout>
@@ -48,14 +46,16 @@
             android:layout_height="0dp"
             android:layout_weight="4"
             android:clipToPadding="false"
-            android:paddingTop="16dp">
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp">
 
         </androidx.recyclerview.widget.RecyclerView>
 
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1">
+            android:layout_weight="2"
+            android:background="@drawable/calendar_day_background">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -66,7 +66,10 @@
                     android:id="@+id/tvCalendarTransactionList"
                     style="@style/SubText"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:paddingStart="8dp"
+                    android:paddingTop="8dp"
+                    android:paddingEnd="8dp" />
             </LinearLayout>
         </ScrollView>
     </LinearLayout>
@@ -76,7 +79,10 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:background="@color/white"
         android:orientation="vertical"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
         android:visibility="gone">
 
         <LinearLayout

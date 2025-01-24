@@ -19,7 +19,7 @@
             android:id="@+id/ivAvater"
             android:layout_width="64dp"
             android:layout_height="match_parent"
-            android:layout_margin="4dp"
+            android:layout_margin="8dp"
             app:srcCompat="@drawable/ic_launcher_background" />
 
         <LinearLayout
@@ -53,8 +53,9 @@
             android:id="@+id/btnPlayerSettings"
             android:layout_width="64dp"
             android:layout_height="match_parent"
-            android:layout_margin="4dp"
-            android:background="@drawable/menu_button" />
+            android:layout_margin="8dp"
+            android:background="@drawable/menu_button"
+            android:padding="32dp" />
     </LinearLayout>
 
     <com.google.android.material.tabs.TabLayout

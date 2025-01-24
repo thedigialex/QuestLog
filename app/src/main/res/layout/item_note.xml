@@ -17,6 +17,7 @@
         style="@style/SubText"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:maxLines="2"
-        android:ellipsize="end"/>
+        android:layout_marginStart="16dp"
+        android:ellipsize="end"
+        android:maxLines="2" />
 </LinearLayout>
