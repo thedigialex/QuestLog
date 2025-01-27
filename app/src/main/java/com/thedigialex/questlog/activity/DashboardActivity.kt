@@ -29,6 +29,7 @@ class DashboardActivity : AppCompatActivity() {
         val tabLayout: TabLayout = findViewById(R.id.tabLayout)
         val adapter = DashboardPagerAdapter(this, userController)
         viewPager.adapter = adapter
+        viewPager.isUserInputEnabled = false
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             when (position) {
                 0 -> tab.setIcon(R.drawable.ic_quest)
