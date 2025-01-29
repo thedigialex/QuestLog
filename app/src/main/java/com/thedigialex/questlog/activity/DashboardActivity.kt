@@ -3,6 +3,7 @@ package com.thedigialex.questlog.activity
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
@@ -24,6 +25,10 @@ class DashboardActivity : AppCompatActivity() {
         userController.dbHelper.checkLogDateForRepeating()
         btnPlayerSettings = findViewById(R.id.btnPlayerSettings)
         btnPlayerSettings.setOnClickListener { switchVisibilityOfPlayerSettings() }
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+            }
+        })
         createNewItems()
         val viewPager: ViewPager2 = findViewById(R.id.viewPager)
         val tabLayout: TabLayout = findViewById(R.id.tabLayout)
