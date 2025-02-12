@@ -264,7 +264,7 @@ class TransactionListFragment(private val userController: UserController) : Frag
         editCategorySection.visibility = if (isSectionVisible) View.GONE else View.VISIBLE
         settingSection.visibility = View.GONE
         btnDeleteCategory.visibility = if (category.isNew) View.GONE else View.VISIBLE
-        edtCategoryTargetAmount.setText(category.target_amount.toString())
+        edtCategoryTargetAmount.setText(category.targetAmount.toString())
         edtCategoryName.setText(category.name)
         edtCategoryDetails.setText(category.details)
         val position = categoryTypes.indexOf(category.type)
@@ -273,7 +273,7 @@ class TransactionListFragment(private val userController: UserController) : Frag
         }
         btnSaveCategory.setOnClickListener {
             category.name = edtCategoryName.text.toString()
-            category.target_amount = edtCategoryTargetAmount.text.toString().toIntOrNull() ?: 0
+            category.targetAmount = edtCategoryTargetAmount.text.toString().toIntOrNull() ?: 0
             category.type = categoryTypes[spinnerCategoryType.selectedItemPosition]
             category.details = edtCategoryDetails.text.toString()
             userController.dbHelper.updateCategory(category)

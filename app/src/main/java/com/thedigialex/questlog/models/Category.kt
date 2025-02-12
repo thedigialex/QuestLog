@@ -5,6 +5,6 @@ data class Category(
     var type: String = "Income",
     var name: String = "New Category",
     var details: String = "",
-    var target_amount: Int = 0,
+    var targetAmount: Int = 0,
     var isNew: Boolean = false
 )

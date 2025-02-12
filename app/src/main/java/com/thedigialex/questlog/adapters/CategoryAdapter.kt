@@ -39,7 +39,7 @@ class CategoryAdapter(
             }
         }
         tvCategoryName.text = category.name
-        tvCategoryDetails.text = "Target Amount: " + category.target_amount
+        tvCategoryDetails.text = "Target Amount: " + category.targetAmount
         view.setOnClickListener {
             onTaskClick(category)
         }

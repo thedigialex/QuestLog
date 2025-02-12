@@ -186,7 +186,7 @@ class QuestLogDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
                     type = categoryType,
                     name = categoryName,
                     details = categoryDetails,
-                    target_amount = targetAmount,
+                    targetAmount = targetAmount,
                     isNew = false
                 )
                 categories.add(category)
@@ -199,7 +199,7 @@ class QuestLogDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
             put("type", category.type)
             put("name", category.name)
             put("details", category.details)
-            put("target_amount", category.target_amount)
+            put("target_amount", category.targetAmount)
         }
         if (category.isNew) {
             writableDatabase.insert("Categories", null, contentValues)

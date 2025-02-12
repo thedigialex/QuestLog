@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ListView
 import android.widget.EditText
+import androidx.viewpager2.widget.ViewPager2
 import com.thedigialex.questlog.R
 import com.thedigialex.questlog.adapters.NoteAdapter
 import com.thedigialex.questlog.controllers.UserController
@@ -46,14 +47,16 @@ class  NoteListFragment(private val userController: UserController) : Fragment()
     }
 
     private fun switchVisibilityOfEdit(note: Note) {
+        val viewPager = requireActivity().findViewById<ViewPager2>(R.id.viewPager)
         val isInputSectionVisible = noteInputSection.visibility == View.VISIBLE
         noteInputSection.visibility = if (isInputSectionVisible) View.GONE else View.VISIBLE
         noteListView.visibility = if (isInputSectionVisible) View.VISIBLE else View.GONE
         newNoteButton.visibility = if (isInputSectionVisible) View.VISIBLE else View.GONE
         deleteNoteButton.visibility = View.GONE
-
+        viewPager.isUserInputEnabled = true
         if (noteInputSection.visibility == View.VISIBLE) {
             setUpEditView(note)
+            viewPager.isUserInputEnabled = false
         }
         if(!note.isNew) {
             deleteNoteButton.visibility = View.VISIBLE

@@ -2,7 +2,6 @@ package com.thedigialex.questlog.fragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -73,7 +72,7 @@ class CalendarFragment(private val userController: UserController) : Fragment() 
                 type = "Expense",
                 name = "Borrow Payment",
                 details = "Place holder",
-                target_amount = 0,
+                targetAmount = 0,
                 isNew = false
             )
         )
@@ -92,7 +91,7 @@ class CalendarFragment(private val userController: UserController) : Fragment() 
             val totalAmount = transactions.sumOf { it.amount }
             val targetAmount = if (categoryName == "Borrowed") 0 else {
                 val category = allCategories.find { it.name == categoryName }
-                category?.target_amount ?: 0
+                category?.targetAmount ?: 0
             }
             Pair(totalAmount, targetAmount)
         }
